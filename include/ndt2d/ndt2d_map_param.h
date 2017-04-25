@@ -1,5 +1,5 @@
-#ifndef NDT2DMAPPARAMS_H
-#define NDT2DMAPPARAMS_H
+#ifndef NDT2DMAPPARAM_H
+#define NDT2DMAPPARAM_H
 #include "graph_map/map_type.h"
 #include <string.h>
 #include <boost/archive/text_oarchive.hpp>
@@ -13,10 +13,10 @@ namespace libgraphMap{
  * ... Parameter class for mapType. Class is by choice of design fully public.  ...
  */
 
-class NDT2DMapParams : public mapParams{
+class NDT2DMapParam : public mapParam{
 public:
-  ~NDT2DMapParams(){}
-  /*void SetParams(double resolution,
+  ~NDT2DMapParam(){}
+  /*void SetParam(double resolution,
                          float cenx,
                           float ceny,
                            float cenz,
@@ -27,6 +27,7 @@ public:
                                 std::string directory,
                                  bool _saveOnDelete);*/
   void GetRosParamNDT2D();
+
   double resolution_;
   double sizex_;
   double sizey_;
@@ -36,7 +37,7 @@ public:
   std::string directory_;
   bool saveOnDelete_, match2D_,beHMT,matchLaser;
 protected:
-  NDT2DMapParams();
+  NDT2DMapParam();
 
 private:
   friend class graphfactory;
@@ -50,4 +51,4 @@ private:
 
 
 }
-#endif // NDT2DMAPPARAMS_H
+#endif // NDT2DMAPPARAM_H

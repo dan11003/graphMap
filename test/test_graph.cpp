@@ -33,14 +33,14 @@ int main(int argc, char **argv){
   diag1.diagonal()<<0.15,0.15,0.15,0.01,0.01,0.01;
   cov=diag1;
 
-  mapParamPtr params=graphfactory::CreateMapParam(maptype);
-  GraphMapPtr graph=graphfactory::CreateGraph(initPose,params);
+  mapParamPtr param=graphfactory::CreateMapParam(maptype);
+  GraphMapPtr graph=graphfactory::CreateGraph(initPose,param);
 
   cout<<"size of graph :"<<graph->MapSize()<<endl;
 
-  graph->AddMapNode(params,diff,cov);
-  graph->AddMapNode(params,diff,cov);
-  graph->AddMapNode(params,diff,cov);
+  graph->AddMapNode(param,diff,cov);
+  graph->AddMapNode(param,diff,cov);
+  graph->AddMapNode(param,diff,cov);
   cout<<"size of graph :"<<graph->MapSize()<<endl;
   graphPlot::PlotPoseGraph(graph);
   cout<<graph->ToString()<<endl;

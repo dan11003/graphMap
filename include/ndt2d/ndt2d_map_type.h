@@ -2,7 +2,7 @@
 #define NDT2DMAP_TYPE_H
 #include "graphfactory.h"
 #include <graph_map/map_type.h>
-#include <ndt2d/ndt2d_map_params.h>
+#include <ndt2d/ndt2d_map_param.h>
 #include <ndt_map/ndt_map_hmt.h>
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
@@ -20,10 +20,10 @@ class NDT2DMapType:public mapType{
 public:
   ~NDT2DMapType();
   virtual void update(const Eigen::Affine3d &Tsensor, pcl::PointCloud<pcl::PointXYZ> &cloud);
-  virtual NDTMapHMT* GetMap() { return map_;}
+  virtual NDTMap* GetMap() { return map_;}
 protected:
-  NDT2DMapType(const Eigen::Affine3d &mapPose, NDT2DMapParamsPtr params);
-  NDTMapHMT *map_;
+  NDT2DMapType(const Eigen::Affine3d &mapPose, NDT2DMapParamPtr param);
+  NDTMap *map_;
 
 
 private:

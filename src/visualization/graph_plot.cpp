@@ -3,22 +3,26 @@
 namespace libgraphMap{
 bool graphPlot::initialized_=false;
 ros::NodeHandle* graphPlot::nh_=NULL;
-ros::Publisher* graphPlot::mapPublisher_=NULL;
+ros::Publisher* graphPlot::localMapPublisher_=NULL;
 ros::Publisher* graphPlot::graphPublisher_=NULL;
+ros::Publisher* graphPlot::globalMapPublisher_=NULL;
+
 void graphPlot::Initialize(){
+  cout<<"graph_plot: initialize"<<endl;
   nh_=new ros::NodeHandle("");
-  graphPublisher_=new ros::Publisher();
-  mapPublisher_=new ros::Publisher();
-  *mapPublisher_=  nh_->advertise<visualization_msgs::MarkerArray>(NDT_MAP_TOPIC,10);
+  graphPublisher_=    new ros::Publisher();
+  localMapPublisher_= new ros::Publisher();
+  globalMapPublisher_=new ros::Publisher();
+  *localMapPublisher_=  nh_->advertise<visualization_msgs::MarkerArray>(NDT_LOCAL_MAP_TOPIC,10);
+  *globalMapPublisher_= nh_->advertise<visualization_msgs::MarkerArray>(NDT_GLOBAL_MAP_TOPIC,10);
   *graphPublisher_=nh_->advertise<geometry_msgs::PoseArray>(GRAPH_TOPIC,10);
   initialized_=true;
-  sleep(1);
 }
 void graphPlot::PlotPoseGraph(GraphMapPtr graph){
   if(!initialized_)
     Initialize();
   geometry_msgs::PoseArray poseArr;
-    poseArr.poses.clear();
+  poseArr.poses.clear();
   poseArr.header.stamp=ros::Time::now();
   poseArr.header.frame_id="/world";
   ROS_INFO_STREAM("poseArray.header: frame=" << poseArr.header.frame_id);
@@ -32,11 +36,11 @@ void graphPlot::PlotPoseGraph(GraphMapPtr graph){
     cout<<"with orientation \n"<<pose_tmp.linear()<<endl;
 
   }
-  cout<<"senging "<<graph->MapSize()<<" poses"<<endl;
+  //cout<<"senging "<<graph->MapSize()<<" poses"<<endl;
   for(int i=0;i<5;i++){
-  graphPublisher_->publish(poseArr);
-  cout<<"sending"<<endl;
-  sleep(1);
+    graphPublisher_->publish(poseArr);
+    cout<<"sending"<<endl;
+    sleep(1);
   }
 }
 
@@ -64,14 +68,14 @@ void graphPlot::CovarToMarker(const Eigen::Matrix3d &cov,const Eigen::Vector3d &
   marker.pose.position.z=mean(2);
 
 }
-void graphPlot::sendMapToRviz( lslgeneric::NDTMap *mapPtr, ros::Publisher &mapPublisher,int color){
+void graphPlot::sendMapToRviz(lslgeneric::NDTMap *mapPtr, ros::Publisher *mapPublisher, string frame, int color){
   if(!initialized_)
     Initialize();
-
+  //std::cout<<"sending map to rviz"<<std::endl;
   std::vector<lslgeneric::NDTCell*> ndts;
   ndts = mapPtr->getAllCells();
-  std::cout<<"sending map to rviz"<<std::endl;
-  fprintf(stderr,"SENDING MARKER ARRAY MESSAGE (%zu components)\n",ndts.size());
+
+ // fprintf(stderr,"SENDING MARKER ARRAY MESSAGE (%zu components)\n",ndts.size());
   visualization_msgs::MarkerArray marray;
 
   for(unsigned int i=0;i<ndts.size();i++){
@@ -80,7 +84,7 @@ void graphPlot::sendMapToRviz( lslgeneric::NDTMap *mapPtr, ros::Publisher &mapPu
 
     visualization_msgs::Marker marker;
     CovarToMarker(cov,m,marker);
-    marker.header.frame_id = "world";
+    marker.header.frame_id = frame;
     marker.header.stamp = ros::Time();
     marker.ns = "NDT";
     marker.id = i;
@@ -107,11 +111,20 @@ void graphPlot::sendMapToRviz( lslgeneric::NDTMap *mapPtr, ros::Publisher &mapPu
     }
     marray.markers.push_back(marker);
   }
-
-  mapPublisher_->publish(marray);
+  mapPublisher->publish(marray);
   for(unsigned int i=0;i<ndts.size();i++){
     delete ndts[i];
   }
 
+}
+void graphPlot::SendLocalMapToRviz(lslgeneric::NDTMap *mapPtr,int color){
+  if(!initialized_)
+    Initialize();
+  sendMapToRviz(mapPtr,localMapPublisher_,"fuser",color);
+}
+void graphPlot::SendGlobalMapToRviz(lslgeneric::NDTMap *mapPtr,int color){
+  if(!initialized_)
+    Initialize();
+  sendMapToRviz(mapPtr,globalMapPublisher_,"world",color);
 }
 }

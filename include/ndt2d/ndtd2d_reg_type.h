@@ -15,19 +15,38 @@
 #include <ndt_registration/ndt_matcher_d2d.h>
 #include <ndt_registration/ndt_matcher_d2d_sc.h>
 #include "ndt2d/ndt2d_map_type.h"
+#include "visualization/graph_plot.h"
+
 namespace libgraphMap{
 using namespace lslgeneric;
 class ndtd2dRegType:public registrationType{
 public:
   ~ndtd2dRegType();
-  bool Register(mapTypePtr maptype, Eigen::Affine3d Tnow, const Eigen::Affine3d &Tmotion, pcl::PointCloud<pcl::PointXYZ> &cloud);//This methods attempts to register the point cloud versus the map using Tmotion as a first guess
-private:
-  NDTMatcherD2D_2D matcher2D_;
+  bool Register(mapTypePtr maptype, Eigen::Affine3d &Tnow, const Eigen::Affine3d &Tmotion, pcl::PointCloud<pcl::PointXYZ> &cloud);//This methods attempts to register the point cloud versus the map using Tmotion as a first guess
+protected:
+  ndtd2dRegType(regParamPtr paramptr);
   double resolution_,resolutionLocalFactor_;
-  double sensorRange_;
-  double mapSizeZ_;
-  ndtd2dRegType();
+  NDTMatcherD2D_2D matcher2D_;
+private:
   friend class graphfactory;
+};
+
+
+class ndtd2dRegParam:public registrationParameters{
+public:
+  ~ndtd2dRegParam();
+  void GetParametersFromRos();
+  double resolution_=0.4, resolutionLocalFactor_=1.0;
+  //Matcher
+  int  matcher2D_ITR_MAX = 30;
+  bool matcher2D_step_control=true;
+  int  matcher2D_n_neighbours=2;
+
+protected:
+  ndtd2dRegParam();
+private:
+  friend class graphfactory;
+
 };
 }
 #endif // NDTD2DREGTYPE_H

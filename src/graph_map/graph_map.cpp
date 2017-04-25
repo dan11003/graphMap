@@ -14,7 +14,7 @@ mapNodePtr GraphMap::GetCurrentNode(){
 void GraphMap::AddMapNode(const mapParamPtr &mapparam,const Eigen::Affine3d &diff,const Matrix6d &covar){ //Add node with link uncertainty
 
   Eigen::Affine3d newNodePose=Eigen::Affine3d::Identity();
-    newNodePose= currentNode_->GetPose()*diff;
+  newNodePose= currentNode_->GetPose()*diff;
   mapNodePtr newNode=graphfactory::CreateMapNode(newNodePose,mapparam);
   factorPtr sd=graphfactory::CreateMapNodeFactor(currentNode_,newNode,diff,covar);
   factors_.push_back(sd);//Add connection between current and new node with link diff and covariance

@@ -11,6 +11,7 @@ find_package(catkin REQUIRED
     cmake_modules #not needed
     ndt_registration
     ndt_map
+    laser_geometry
     eigen_conversions
     pcl_ros
     roscpp
@@ -24,7 +25,7 @@ find_package(Eigen REQUIRED COMPONENTS)
 
 catkin_package(
     DEPENDS Eigen libpcl-all-dev
-    CATKIN_DEPENDS ndt_registration ndt_map roscpp
+    CATKIN_DEPENDS ndt_registration ndt_map roscpp   laser_geometry sensor_msgs
     INCLUDE_DIRS include
     LIBRARIES ${PROJECT_NAME}
     )
@@ -42,7 +43,7 @@ set (${PROJECT_NAME}_LIB_SRCS
     src/graph_map/reg_type.cpp
     src/ndt2d/ndt2d_map_type.cpp
     src/ndt2d/ndtd2d_reg_type.cpp
-    src/ndt2d/ndt2d_map_params.cpp
+    src/ndt2d/ndt2d_map_param.cpp
     src/graphfactory.cpp
     src/visualization/graph_plot.cpp
     #src/graph_map_fuser_node.cpp

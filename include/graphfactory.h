@@ -14,11 +14,20 @@ using Eigen::Affine3d;
 class factor;
 typedef boost::shared_ptr<factor> factorPtr;
 
+
+/*Registration types */
 class registrationType;
 typedef boost::shared_ptr<registrationType> regTypePtr;
 
-class ndtd2dRegType;
-typedef boost::shared_ptr<ndtd2dRegType> ndtd2dregTypePtr;
+class registrationParameters;
+typedef boost::shared_ptr<registrationParameters> regParamPtr;
+
+    class ndtd2dRegParam;
+    typedef boost::shared_ptr<ndtd2dRegParam> ndtd2dregParamPtr;
+
+    class ndtd2dRegType;
+    typedef boost::shared_ptr<ndtd2dRegType> ndtd2dregTypePtr;
+
 
 class node;
 typedef boost::shared_ptr<node> NodePtr;
@@ -32,14 +41,14 @@ typedef boost::shared_ptr<GraphMap> GraphMapPtr;
 class mapType;
 typedef boost::shared_ptr<mapType> mapTypePtr;
 
-class mapParams;
-typedef boost::shared_ptr<mapParams> mapParamPtr;
+class mapParam;
+typedef boost::shared_ptr<mapParam> mapParamPtr;
 
 class NDT2DMapType;
 typedef boost::shared_ptr<NDT2DMapType> NDT2DMapPtr;
 
-class NDT2DMapParams;
-typedef boost::shared_ptr<NDT2DMapParams> NDT2DMapParamsPtr;
+class NDT2DMapParam;
+typedef boost::shared_ptr<NDT2DMapParam> NDT2DMapParamPtr;
 
 /*!
  * ... Abstract class to implement map parameters.  ...
@@ -50,7 +59,9 @@ public:
   static mapTypePtr  CreateMap(const Eigen::Affine3d &mapPose,mapParamPtr mapparam);
   static GraphMapPtr CreateGraph(const Eigen::Affine3d &nodepose, mapParamPtr &mapparam);
   static mapNodePtr  CreateMapNode(const Eigen::Affine3d &pose,const mapParamPtr &mapparam);
-  static regTypePtr  CreateRegistrationType(string regTypeName);
+
+  static regTypePtr  CreateRegistrationType(regParamPtr regparam);
+  static regParamPtr CreateRegParam(string regType);
 
   static factorPtr   CreateObservationFactor(mapNodePtr mapPose, NodePtr observationPose,const Eigen::Affine3d &diff,const Matrix6d &covar);
   static factorPtr   CreateMapNodeFactor(mapNodePtr prevMapPose, mapNodePtr nextMapPose,const Eigen::Affine3d &diff,const Matrix6d &covar);

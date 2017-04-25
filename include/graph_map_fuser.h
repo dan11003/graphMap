@@ -18,14 +18,16 @@ using namespace std;
 class graphMapFuser{
 public:
   graphMapFuser(string maptype, string registratorType,Eigen::Affine3d initPose,Eigen::Affine3d sensorPose);
-  virtual void processFrame(pcl::PointCloud<pcl::PointXYZ> &cloud, Eigen::Affine3d &Tnow, const Eigen::Affine3d & Tmotion); //cloud is the current scan in robot frame,  Tnow is the current pose in world frame
+  virtual void ProcessFrame(pcl::PointCloud<pcl::PointXYZ> &cloud, Eigen::Affine3d &Tnow, const Eigen::Affine3d & Tmotion); //cloud is the current scan in robot frame,  Tnow is the current pose in world frame
+  virtual bool ErrorStatus(string status="");
 protected:
   //virtual void GetParameters();//Get fuser specific parameters, map specific parameters are preferably read inside a class derived from map_paramers
   ros::NodeHandle n_;
   string maptype_,registratorType_;
-  Eigen::Affine3d initPose_;
-  mapParamPtr params_;
+  Eigen::Affine3d initPose_,sensorPose_;
+  mapParamPtr mapParam_;
   GraphMapPtr graph_;
+  regParamPtr regParam_;
   regTypePtr registrator_;
   unsigned int frameNr_;
 

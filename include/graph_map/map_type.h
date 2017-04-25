@@ -20,12 +20,12 @@ namespace libgraphMap{
  * ... Abstract class to implement a map. The class defines an abstraction of a map including generic parameters and methods  ...
  */
 
-class mapParams{
+class mapParam{
 public:
-  virtual ~mapParams()=0;
+  virtual ~mapParam()=0;
   string getMapName() const{return mapName_;}
 protected:
-  mapParams(){}
+  mapParam(){}
   Eigen::Affine3d mapPose_;
   bool initialized_;
   string mapName_;
