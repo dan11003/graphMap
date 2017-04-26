@@ -33,7 +33,7 @@
 
 #include <boost/foreach.hpp>
 #include <ndt_map/NDTMapMsg.h>
-
+#include "gnuplot-iostream.h"
 
 #ifndef SYNC_FRAMES
 #define SYNC_FRAMES 20
@@ -65,7 +65,7 @@ protected:
   tf::TransformListener tf_listener_;
   ros::Publisher output_pub_;
   Eigen::Affine3d pose_, T, sensorPose_;
-
+  Gnuplot gp;
   unsigned int nb_added_clouds_;
   double varz;
 
@@ -227,7 +227,6 @@ public:
                     Eigen::Affine3d Tmotion) {
     //fuser_->processFrame();
     //sanity check for odometry
-    cout<<"node: process frame"<<endl;
     if((Tmotion.translation().norm() <0.01 && Tmotion.rotation().eulerAngles(0,1,2)(2)< 0.01) && useOdometry) {
       std::cerr<<"No motion, skipping Frame\n";
       return;
@@ -276,7 +275,7 @@ public:
   void laserCallback(const sensor_msgs::LaserScan::ConstPtr& msg_in)
   {
     // Add to a queue
-    cout<<"laser callback"<<endl;
+
     sensor_msgs::PointCloud2 cloud;
     pcl::PointCloud<pcl::PointXYZ> pcl_cloud_unfiltered, pcl_cloud;
     projector_.projectLaser(*msg_in, cloud);
@@ -318,7 +317,9 @@ public:
 
     last_odom = this_odom;
 
+    cout<<"node: laser and odom callback, frame nr: "<<nb_added_clouds_<<endl;
 
+    //plot laser in world based assuming the scan came from fuser laser link
     projector_.projectLaser(*msg_in, cloud);
     pcl::fromROSMsg (cloud, pcl_cloud_unfiltered);
     sensor_msgs::LaserScan msg_out=*msg_in;
@@ -326,6 +327,22 @@ public:
     msg_out.header.frame_id="/fuser_laser_link";
     laser_publisher_.publish(msg_out);
     pcl::PointXYZ pt;
+    if(nb_added_clouds_%1==0){
+
+    std::vector<std::pair<double, double> > range_angle_data;
+    for(int i=msg_out.ranges.size()-1;i>=0;i--){
+       double angle=msg_out.angle_min+(double)i/(double)(msg_out.ranges.size())*(double)(msg_out.angle_max-msg_out.angle_min);
+       double range=msg_out.ranges[i];
+       range_angle_data.push_back(std::make_pair(angle,range ));
+    }
+
+
+
+    gp << "set xrange [-3.5:3.5]\nset yrange [0:20]\n";
+    gp << "plot" << gp.file1d(range_angle_data) << "with lines title 'cubic',"<<endl;
+
+  //  range_angle_data.clear();
+    }
     //add some variance on z
     for(int i=0; i<pcl_cloud_unfiltered.points.size(); i++) {
       pt = pcl_cloud_unfiltered.points[i];
@@ -335,7 +352,7 @@ public:
       }
     }
     //ROS_INFO("Got laser and odometry!");
-    cout<<"node: laser and odom callback, process frame"<<endl;
+
     this->processFrame(pcl_cloud,Tm);
     nb_added_clouds_++;
     //publish_map();

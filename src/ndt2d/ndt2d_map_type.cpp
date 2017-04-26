@@ -23,7 +23,6 @@ NDT2DMapType::~NDT2DMapType(){}
 void NDT2DMapType::update(const Eigen::Affine3d &Tsensor,pcl::PointCloud<pcl::PointXYZ> &cloud){//update map, cloud is the scan, Tsensor is the pose where the scan was aquired.
 
   if(initialized_){
-    cout<<"size z="<<sizeZ_<<", sensor range="<<sensorRange_<<endl;
     Eigen::Vector3d localMapSize(sensorRange_,sensorRange_,sizeZ_);
     map_->addPointCloudMeanUpdate(Tsensor.translation(),cloud,localMapSize, 1e5, 25, 2*sizeZ_, 0.06);
 
@@ -36,11 +35,6 @@ void NDT2DMapType::InitializeMap(const Eigen::Affine3d &Tsensor,pcl::PointCloud<
   cout<<"initialize map"<<endl;
   map_->addPointCloud(Tsensor.translation(),cloud, 0.1, 100.0, 0.1);
   map_->computeNDTCells(CELL_UPDATE_MODE_SAMPLE_VARIANCE, 1e5, 255, Tsensor.translation(), 0.1);
-  //      lslgeneric::transformPointCloudInPlace(sensor_pose, cloud);
-  //lslgeneric::transformPointCloudInPlace(mapPose_, cloud);
-
-  //Tlast_fuse_ = Td;  should probably not be here as they are related to fuser
-  //Todom = Tnow;
 }
 
 }

@@ -10,6 +10,8 @@
 #include <pcl/point_cloud.h>
 #include "pcl/io/pcd_io.h"
 #include "ros/ros.h"
+#include "gnuplot-iostream.h"
+
 
 
 namespace libgraphMap{

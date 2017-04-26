@@ -12,7 +12,7 @@
 
 #include <ndt_map/pointcloud_utils.h>
 //#include <ndt_fuser/motion_model_2d.h>
-
+#define ndt_map_type_name "ndt_2d_map"
 namespace libgraphMap{
 using namespace lslgeneric;
 

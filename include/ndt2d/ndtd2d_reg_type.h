@@ -17,6 +17,7 @@
 #include "ndt2d/ndt2d_map_type.h"
 #include "visualization/graph_plot.h"
 
+#define ndt_d2d_reg_type_name "ndt_d2d_reg"
 namespace libgraphMap{
 using namespace lslgeneric;
 class ndtd2dRegType:public registrationType{

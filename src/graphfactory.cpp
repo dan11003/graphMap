@@ -10,33 +10,32 @@
 
 namespace libgraphMap{
 mapParamPtr graphfactory::CreateMapParam(string mapname){
-  if(mapname.compare("ndt_2d_map")==0){
-    cout<<"Graphfactory: created ndt2dmap parameters"<<endl;
+  if(mapname.compare(ndt_map_type_name)==0){
+    cout<<"Graphfactory: Created parameters for map type: \""<<ndt_map_type_name<<"\""<<endl;
     NDT2DMapParamPtr paramPtr(new NDT2DMapParam());
     return paramPtr;
   }
   else if(mapname.compare("template")==0){
-    cout<<"Graphfactory: template"<<endl;
+    cerr<<"Graphfactory:  Template, no map parameter instance created"<<endl;
     return NULL;
   }
   else{
-    cout<<"error creating map parameters"<<endl;
+    cerr<<"No map type exists with name: \""<<mapname<<"\""<<endl;
     return NULL;
   }
 }
 
 mapTypePtr graphfactory::CreateMap(const Eigen::Affine3d &mapPose,mapParamPtr mapparam){
   if(  NDT2DMapParamPtr ndt2MapParam = boost::dynamic_pointer_cast< NDT2DMapParam >(mapparam) ){ //perform typecast and check if not null conversion
-    cout<<"Graphfactory: created ndt2d map"<<endl;
+    cout<<"Graphfactory: Created map of type: \""<<ndt_map_type_name<<"\""<<endl;
     return  mapTypePtr(new NDT2DMapType(mapPose,ndt2MapParam));
   }
   else if(mapparam->getMapName().compare("template")==0){
-    //Dont forget to type cast mapparam and make sure result of cast is non-NULL
-    cout<<"Graphfactory: created template map"<<endl;
+    cerr<<"Graphfactory: no map exists for \"template\""<<endl;
     return NULL;
   }
   else{
-    cerr<<"Graphfactory: No map type for derived class of map parameter"<<endl;
+    cerr<<"Graphfactory: No map type exists for map parameters"<<endl;
     return NULL;
   }
 
@@ -69,16 +68,16 @@ regTypePtr graphfactory::CreateRegistrationType(regParamPtr regparam){
     return regTypePtr(new ndtd2dRegType(ndt_d2d_reg_param_ptr));
   }
   else
-    cerr<<"failed to create object of registration type"<<endl;
+    cerr<<"Failed to create object of registration type"<<endl;
   return NULL;
 }
 regParamPtr graphfactory::CreateRegParam(string regType){
-  if(regType.compare("ndt_d2d_reg")==0){
-    cout<<"Graphfactory: Creating parameters for ndt_d2d_reg "<<endl;
+  if(regType.compare(ndt_d2d_reg_type_name)==0){
+    cout<<"Graphfactory: Creating parameters for registration type: \""<<ndt_d2d_reg_type_name<<"\""<<endl;
     return regParamPtr(new ndtd2dRegParam());
   }
   else{
-    cerr<<"no registrator with name: "<<regType<<",should be ndt_d2d_reg"<<endl;
+    cerr<<"No registration type with name: \""<<regType<<"\""<<endl;
     return NULL;
   }
 }
