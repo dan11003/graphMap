@@ -1,3 +1,6 @@
+/**
+ *  file map_type.h.
+ */
 #ifndef MAPTYPE_H
 #define MAPTYPE_H
 #include "graphfactory.h"
@@ -17,7 +20,7 @@ namespace libgraphMap{
 
 
 /*!
- * ... Abstract class to implement a map. The class defines an abstraction of a map including generic parameters and methods  ...
+ * ... Abstract class to present parameters for "mapType". this class contain generic parameters forr all map types.  ...
  */
 
 class mapParam{
@@ -40,12 +43,17 @@ protected:
 
 
 /*!
- * ... Abstract class to implement maps.  ...
+ * ... Abstract class to implement local maps.  ...
  */
 
 class mapType{
 
 public:
+  /*!
+   * \brief update attempts to update the map based on point cloud data and the pose where the scan was taken from(scanner) in the world fram
+   * \param Tnow transformation from world to sensor frame
+   * \param cloud data to update map with
+   */
   virtual void update(const Eigen::Affine3d &Tnow,pcl::PointCloud<pcl::PointXYZ> &cloud)=0;
   virtual void SetMapPose(const Eigen::Affine3d mapPose){mapPose_=mapPose;}
 protected:
