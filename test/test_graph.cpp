@@ -14,24 +14,23 @@ int main(int argc, char **argv){
   ros::init(argc, argv, "testGraphLib");
   ros::NodeHandle n;
   string maptype;
-  n.param<std::string>("map_type",maptype,"template");
-  cout<<"Starting graph node with maptype: "<<maptype<<endl;
-  Eigen::Affine3d initPose;
 
-  initPose=Affine3d::Identity();
-  initPose.translation()<<2.5,2.5,0.01;
-  Eigen::Affine3d diff;
-  diff=Affine3d::Identity();
+  n.param<std::string>("map_type",maptype,"ndt_2d_map");
+  cout<<"Starting graph node with maptype: "<<maptype<<endl;
+
+  Eigen::Affine3d initPose=Affine3d::Identity();
+  initPose.translation()<<2.5,2.5,0.01;//Create initiali pose of graph
+
+  Eigen::Affine3d diff=Affine3d::Identity();
 
   diff= AngleAxisd(0.0*M_PI, Vector3d::UnitX())
       * AngleAxisd(0.0*M_PI, Vector3d::UnitY())
-      * AngleAxisd(0.2*M_PI, Vector3d::UnitZ())*Translation3d(1,1,0);
+      * AngleAxisd(0.2*M_PI, Vector3d::UnitZ())*Translation3d(1,1,0);//Transformation between subsequent map nodes
 
   Matrix6d cov;
   Eigen::DiagonalMatrix<double,6> diag1;
-
   diag1.diagonal()<<0.15,0.15,0.15,0.01,0.01,0.01;
-  cov=diag1;
+  cov=diag1; //Create covariance to represent uncertainty betweem mpde
 
   mapParamPtr param=graphfactory::CreateMapParam(maptype);
   GraphMapPtr graph=graphfactory::CreateGraph(initPose,param);

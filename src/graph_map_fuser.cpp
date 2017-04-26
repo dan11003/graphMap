@@ -13,6 +13,7 @@ graphMapFuser::graphMapFuser(string maptype, string registratorType,Eigen::Affin
   frameNr_=0;
 }
 
+
 void graphMapFuser::ProcessFrame(pcl::PointCloud<pcl::PointXYZ> &cloud, Eigen::Affine3d &Tnow, const Eigen::Affine3d & Tmotion){
   //in sensor frame
   if(frameNr_>=0){

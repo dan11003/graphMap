@@ -89,7 +89,7 @@ protected:
   message_filters::Synchronizer< PointsPoseSync > *sync_pp_;
   ros::ServiceServer save_map_;
 
-  ros::Publisher map_publisher_;
+  ros::Publisher map_publisher_,laser_publisher_;
 
   Eigen::Affine3d last_odom, this_odom;
   std::string tf_pose_frame_;
@@ -181,6 +181,7 @@ public:
     initPoseSet = false;
     param_nh.param<bool>("do_soft_constraints", do_soft_constraints, false);
 
+    laser_publisher_=param_nh.advertise<sensor_msgs::LaserScan>("laserscan_fuse_frame",50);
     use_tf_listener_ = false;
     if (tf_pose_frame_ != std::string("")) {
       use_tf_listener_ = true;
@@ -215,7 +216,7 @@ public:
         sync_lo_->registerCallback(boost::bind(&GraphMapFuserNode::laserOdomCallback, this, _1, _2));
       }
     }
-    //save_map_ = param_nh.advertiseService("save_map", &NDTFuserNode::save_map_callback, this);
+
     if(plotGTTrack) {
       gt_sub = nh_.subscribe<nav_msgs::Odometry>(gt_topic,10,&GraphMapFuserNode::gt_callback, this);
     }
@@ -275,6 +276,7 @@ public:
   void laserCallback(const sensor_msgs::LaserScan::ConstPtr& msg_in)
   {
     // Add to a queue
+    cout<<"laser callback"<<endl;
     sensor_msgs::PointCloud2 cloud;
     pcl::PointCloud<pcl::PointXYZ> pcl_cloud_unfiltered, pcl_cloud;
     projector_.projectLaser(*msg_in, cloud);
@@ -319,7 +321,10 @@ public:
 
     projector_.projectLaser(*msg_in, cloud);
     pcl::fromROSMsg (cloud, pcl_cloud_unfiltered);
-
+    sensor_msgs::LaserScan msg_out=*msg_in;
+    msg_out.header.stamp=ros::Time::now();
+    msg_out.header.frame_id="/fuser_laser_link";
+    laser_publisher_.publish(msg_out);
     pcl::PointXYZ pt;
     //add some variance on z
     for(int i=0; i<pcl_cloud_unfiltered.points.size(); i++) {

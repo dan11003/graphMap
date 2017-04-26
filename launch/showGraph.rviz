@@ -51,8 +51,8 @@ Visualization Manager:
       Name: Grid
       Normal Cell Count: 0
       Offset:
-        X: 0.200000003
-        Y: 0.200000003
+        X: 0.126900002
+        Y: 0.385399997
         Z: 0
       Plane: XY
       Plane Cell Count: 100
@@ -100,24 +100,27 @@ Visualization Manager:
       Frames:
         All Enabled: false
         base_laser_link:
-          Value: true
+          Value: false
         fuser:
           Value: true
+        fuser_laser_link:
+          Value: false
         odom_base_link:
           Value: false
         state_base_link:
           Value: true
         world:
-          Value: true
+          Value: false
       Marker Scale: 1
       Name: TF
-      Show Arrows: true
+      Show Arrows: false
       Show Axes: true
       Show Names: true
       Tree:
         world:
           fuser:
-            {}
+            fuser_laser_link:
+              {}
           odom_base_link:
             {}
           state_base_link:
@@ -128,6 +131,14 @@ Visualization Manager:
     - Class: rviz/MarkerArray
       Enabled: true
       Marker Topic: /NDTlocalMap
+      Name: MarkerArray
+      Namespaces:
+        NDT: true
+      Queue Size: 1000
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /NDTglobalMap
       Name: MarkerArray
       Namespaces:
         NDT: true
@@ -158,18 +169,10 @@ Visualization Manager:
       Size (Pixels): 3
       Size (m): 0.00999999978
       Style: Flat Squares
-      Topic: /laserscan
+      Topic: /graph_node/laserscan_fuse_frame
       Unreliable: false
       Use Fixed Frame: true
       Use rainbow: true
-      Value: true
-    - Class: rviz/MarkerArray
-      Enabled: true
-      Marker Topic: /NDTglobalMap
-      Name: MarkerArray
-      Namespaces:
-        NDT: true
-      Queue Size: 1000
       Value: true
   Enabled: true
   Global Options:
@@ -194,25 +197,25 @@ Visualization Manager:
   Value: true
   Views:
     Current:
-      Class: rviz/ThirdPersonFollower
-      Distance: 5.27731943
+      Class: rviz/Orbit
+      Distance: 10.9140625
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.0599999987
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 0
-        Y: 0
-        Z: 0
-      Focal Shape Fixed Size: false
+        X: -0.337341547
+        Y: 0.0581592023
+        Z: 0.0108394623
+      Focal Shape Fixed Size: true
       Focal Shape Size: 0.0500000007
       Name: Current View
       Near Clip Distance: 0.00999999978
-      Pitch: 0.920398116
+      Pitch: 1.56979632
       Target Frame: fuser
-      Value: ThirdPersonFollower (rviz)
-      Yaw: 2.47540689
+      Value: Orbit (rviz)
+      Yaw: 0.0703987852
     Saved:
       - Class: rviz/Orbit
         Distance: 39.1665726
