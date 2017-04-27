@@ -4,6 +4,10 @@ project(graph_map)
 set (CMAKE_CXX_STANDARD 11)
 set(CMAKE_BUILD_TYPE Release)
 
+if("$ENV{ROS_DISTRO}" STREQUAL "indigo")
+add_definitions(-std=c++11)
+endif()
+
 find_package(PCL 1.7 REQUIRED)
 find_package(catkin REQUIRED
     geometry_msgs
