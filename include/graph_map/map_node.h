@@ -37,6 +37,7 @@ public:
 protected:
   mapTypePtr map_;
   mapNode(const Eigen::Affine3d &pose,const mapParamPtr &mapparam);
+  unsigned int num_id_;
 private:
   friend class graphfactory;
   /*-----Boost serialization------*/

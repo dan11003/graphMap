@@ -14,13 +14,14 @@
 #define GRAPH_TOPIC "graphMap"
 namespace libgraphMap{
 using namespace std;
+using Eigen::Affine3d;
 class graphPlot
 {
   graphPlot();
 public:
-  static void sendMapToRviz( lslgeneric::NDTMap *mapPtr, ros::Publisher *mapPublisher,string frame,int color);
-  static void SendLocalMapToRviz(lslgeneric::NDTMap *mapPtr, int color);
-  static void SendGlobalMapToRviz(lslgeneric::NDTMap *mapPtr, int color);
+  static void sendMapToRviz( lslgeneric::NDTMap *mapPtr, ros::Publisher *mapPublisher,string frame,int color,const Affine3d &offset=Affine3d::Identity());
+  static void SendLocalMapToRviz(lslgeneric::NDTMap *mapPtr, int color,const Affine3d &offset=Affine3d::Identity());
+  static void SendGlobalMapToRviz(lslgeneric::NDTMap *mapPtr, int color,const Affine3d &offset=Affine3d::Identity());
   static void CovarToMarker(const Eigen::Matrix3d &cov,const Eigen::Vector3d &mean,visualization_msgs::Marker &marker);
   static void PlotPoseGraph(GraphMapPtr graph);
 

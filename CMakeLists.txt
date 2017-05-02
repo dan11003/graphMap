@@ -50,6 +50,7 @@ set (${PROJECT_NAME}_LIB_SRCS
     src/ndt2d/ndt2d_map_param.cpp
     src/graphfactory.cpp
     src/visualization/graph_plot.cpp
+    src/lidarUtils/lidar_utilities.cpp
     #src/graph_map_fuser_node.cpp
     )
 add_library(${PROJECT_NAME} ${${PROJECT_NAME}_LIB_SRCS})

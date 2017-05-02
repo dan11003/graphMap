@@ -61,7 +61,7 @@ void graphPlot::CovarToMarker(const Eigen::Matrix3d &cov,const Eigen::Vector3d &
   marker.pose.position.z=mean(2);
 
 }
-void graphPlot::sendMapToRviz(lslgeneric::NDTMap *mapPtr, ros::Publisher *mapPublisher, string frame, int color){
+void graphPlot::sendMapToRviz(lslgeneric::NDTMap *mapPtr, ros::Publisher *mapPublisher, string frame, int color,const Affine3d &offset){
   if(!initialized_)
     Initialize();
 
@@ -95,8 +95,8 @@ void graphPlot::sendMapToRviz(lslgeneric::NDTMap *mapPtr, ros::Publisher *mapPub
     marker.color.b = 1.0;
   }
   for(unsigned int i=0;i<ndts.size();i++){
-    Eigen::Matrix3d cov = ndts[i]->getCov();
-    Eigen::Vector3d m = ndts[i]->getMean();
+    Eigen::Matrix3d cov = offset.linear()*ndts[i]->getCov()*offset.inverse().linear();
+    Eigen::Vector3d m = offset*ndts[i]->getMean();
     CovarToMarker(cov,m,marker);
     marker.id = i;
     marray.markers.push_back(marker);
@@ -104,14 +104,14 @@ void graphPlot::sendMapToRviz(lslgeneric::NDTMap *mapPtr, ros::Publisher *mapPub
   mapPublisher->publish(marray);
 
 }
-void graphPlot::SendLocalMapToRviz(lslgeneric::NDTMap *mapPtr,int color){
+void graphPlot::SendLocalMapToRviz(lslgeneric::NDTMap *mapPtr,int color,const Affine3d &offset){
   if(!initialized_)
     Initialize();
-  sendMapToRviz(mapPtr,localMapPublisher_,"fuser",color);
+  sendMapToRviz(mapPtr,localMapPublisher_,"fuser",color,offset);
 }
-void graphPlot::SendGlobalMapToRviz(lslgeneric::NDTMap *mapPtr,int color){
+void graphPlot::SendGlobalMapToRviz(lslgeneric::NDTMap *mapPtr, int color,const Affine3d &offset){
   if(!initialized_)
     Initialize();
-  sendMapToRviz(mapPtr,globalMapPublisher_,"world",color);
+  sendMapToRviz(mapPtr,globalMapPublisher_,"world",color,offset);
 }
 }

@@ -29,7 +29,6 @@ public:
   string getMapName() const{return mapName_;}
 protected:
   mapParam(){}
-  Eigen::Affine3d mapPose_;
   bool initialized_;
   string mapName_;
   /*-----Boost serialization------*/
@@ -54,11 +53,10 @@ public:
    * \param Tnow transformation from world to sensor frame
    * \param cloud data to update map with
    */
+
   virtual void update(const Eigen::Affine3d &Tnow,pcl::PointCloud<pcl::PointXYZ> &cloud)=0;
-  virtual void SetMapPose(const Eigen::Affine3d mapPose){mapPose_=mapPose;}
 protected:
-  mapType(Eigen::Affine3d mapPose){mapPose_=mapPose;initialized_=false;}
-  Eigen::Affine3d mapPose_;
+  mapType(){initialized_=false;}
   double sizeX_,sizeY_,sizeZ_;
   bool initialized_;
   string mapName_;

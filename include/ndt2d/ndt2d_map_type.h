@@ -22,13 +22,12 @@ public:
   virtual void update(const Eigen::Affine3d &Tsensor, pcl::PointCloud<pcl::PointXYZ> &cloud);
   virtual NDTMap* GetMap() { return map_;}
 protected:
-  NDT2DMapType(const Eigen::Affine3d &mapPose, NDT2DMapParamPtr param);
+  NDT2DMapType(NDT2DMapParamPtr param);
   NDTMap *map_;
-
 
 private:
   double resolution_,resolution_local_factor=1.;
-  double sensorRange_;
+  double sensor_range_;
   friend class graphfactory;
   void InitializeMap(const Eigen::Affine3d &Td,pcl::PointCloud<pcl::PointXYZ> &cloud);
 

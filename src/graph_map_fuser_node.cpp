@@ -34,7 +34,7 @@
 #include <boost/foreach.hpp>
 #include <ndt_map/NDTMapMsg.h>
 #include "gnuplot-iostream.h"
-
+#include "lidarUtils/lidar_utilities.h"
 #ifndef SYNC_FRAMES
 #define SYNC_FRAMES 20
 #define MAX_TRANSLATION_DELTA 2.0
@@ -65,7 +65,6 @@ protected:
   tf::TransformListener tf_listener_;
   ros::Publisher output_pub_;
   Eigen::Affine3d pose_, T, sensorPose_;
-  Gnuplot gp;
   unsigned int nb_added_clouds_;
   double varz;
 
@@ -81,7 +80,7 @@ protected:
   double sensor_pose_x,sensor_pose_y,sensor_pose_z,
   sensor_pose_r,sensor_pose_p,sensor_pose_t;
   laser_geometry::LaserProjection projector_;
-
+  ScanPlot plotter_;
   message_filters::Synchronizer< LaserOdomSync > *sync_lo_;
   message_filters::Synchronizer< LaserPoseSync > *sync_lp_;
 
@@ -89,8 +88,8 @@ protected:
   message_filters::Synchronizer< PointsPoseSync > *sync_pp_;
   ros::ServiceServer save_map_;
 
-  ros::Publisher map_publisher_,laser_publisher_;
-
+  ros::Publisher map_publisher_,laser_publisher_,fuser_odom_publisher_;
+  nav_msgs::Odometry fuser_odom;
   Eigen::Affine3d last_odom, this_odom;
   std::string tf_pose_frame_;
   bool use_tf_listener_;
@@ -180,8 +179,9 @@ public:
     bool do_soft_constraints;
     initPoseSet = false;
     param_nh.param<bool>("do_soft_constraints", do_soft_constraints, false);
-
-    laser_publisher_=param_nh.advertise<sensor_msgs::LaserScan>("laserscan_fuse_frame",50);
+    fuser_odom.header.frame_id="/world";
+    laser_publisher_=param_nh.advertise<sensor_msgs::LaserScan>("laserscan_in_fuser_frame",50);
+    fuser_odom_publisher_=param_nh.advertise<nav_msgs::Odometry>("fuser_odom",50);
     use_tf_listener_ = false;
     if (tf_pose_frame_ != std::string("")) {
       use_tf_listener_ = true;
@@ -327,22 +327,10 @@ public:
     msg_out.header.frame_id="/fuser_laser_link";
     laser_publisher_.publish(msg_out);
     pcl::PointXYZ pt;
-    if(nb_added_clouds_%1==0){
-
-    std::vector<std::pair<double, double> > range_angle_data;
-    for(int i=msg_out.ranges.size()-1;i>=0;i--){
-       double angle=msg_out.angle_min+(double)i/(double)(msg_out.ranges.size())*(double)(msg_out.angle_max-msg_out.angle_min);
-       double range=msg_out.ranges[i];
-       range_angle_data.push_back(std::make_pair(angle,range ));
+    if(nb_added_clouds_%3==0){
+    plotter_.plotScan(msg_out,ScanPlot::xyPlot,"[-20:20]","[-20:20]");
     }
 
-
-
-    gp << "set xrange [-3.5:3.5]\nset yrange [0:20]\n";
-    gp << "plot" << gp.file1d(range_angle_data) << "with lines title 'cubic',"<<endl;
-
-  //  range_angle_data.clear();
-    }
     //add some variance on z
     for(int i=0; i<pcl_cloud_unfiltered.points.size(); i++) {
       pt = pcl_cloud_unfiltered.points[i];
@@ -354,6 +342,9 @@ public:
     //ROS_INFO("Got laser and odometry!");
 
     this->processFrame(pcl_cloud,Tm);
+    fuser_odom.header.stamp=ros::Time::now();
+    tf::poseEigenToMsg( pose_,fuser_odom.pose.pose);
+    fuser_odom_publisher_.publish(fuser_odom);
     nb_added_clouds_++;
     //publish_map();
 

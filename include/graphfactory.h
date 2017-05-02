@@ -56,7 +56,7 @@ typedef boost::shared_ptr<NDT2DMapParam> NDT2DMapParamPtr;
 class graphfactory{
 public:
   static mapParamPtr CreateMapParam(string mapType);
-  static mapTypePtr  CreateMap(const Eigen::Affine3d &mapPose,mapParamPtr mapparam);
+  static mapTypePtr  CreateMap(mapParamPtr mapparam);
   static GraphMapPtr CreateGraph(const Eigen::Affine3d &nodepose, mapParamPtr &mapparam);
   static mapNodePtr  CreateMapNode(const Eigen::Affine3d &pose,const mapParamPtr &mapparam);
 

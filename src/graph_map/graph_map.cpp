@@ -33,4 +33,7 @@ Affine3d GraphMap::GetNodePose(int nodeNr){
   if(nodeNr<MapSize())
     return nodes_[nodeNr]->GetPose();
 }
+Eigen::Affine3d GraphMap::GetCurrentNodePose(){
+  return currentNode_->GetPose();
+}
 }

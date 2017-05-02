@@ -25,10 +25,10 @@ mapParamPtr graphfactory::CreateMapParam(string mapname){
   }
 }
 
-mapTypePtr graphfactory::CreateMap(const Eigen::Affine3d &mapPose,mapParamPtr mapparam){
+mapTypePtr graphfactory::CreateMap(mapParamPtr mapparam){
   if(  NDT2DMapParamPtr ndt2MapParam = boost::dynamic_pointer_cast< NDT2DMapParam >(mapparam) ){ //perform typecast and check if not null conversion
     cout<<"Graphfactory: Created map of type: \""<<ndt_map_type_name<<"\""<<endl;
-    return  mapTypePtr(new NDT2DMapType(mapPose,ndt2MapParam));
+    return  mapTypePtr(new NDT2DMapType(ndt2MapParam));
   }
   else if(mapparam->getMapName().compare("template")==0){
     cerr<<"Graphfactory: no map exists for \"template\""<<endl;

@@ -3,7 +3,7 @@ namespace libgraphMap{
 
 mapNode::mapNode(const Eigen::Affine3d &pose,const mapParamPtr &mapparam){
   pose_=pose;
-  map_=graphfactory::CreateMap(pose,mapparam);
+  map_=graphfactory::CreateMap(mapparam);
 }
 
 void mapNode::updateMap(const Eigen::Affine3d &Tnow,pcl::PointCloud<pcl::PointXYZ> &cloud){

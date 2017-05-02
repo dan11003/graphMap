@@ -16,11 +16,11 @@
 
 namespace libgraphMap{
 using namespace std;
-
+using Eigen::Affine3d;
 class graphMapFuser{
 public:
-  graphMapFuser(string maptype, string registratorType,Eigen::Affine3d initPose,Eigen::Affine3d sensorPose);
-  virtual void ProcessFrame(pcl::PointCloud<pcl::PointXYZ> &cloud, Eigen::Affine3d &Tnow, const Eigen::Affine3d & Tmotion); //cloud is the current scan in robot frame,  Tnow is the current pose in world frame
+  graphMapFuser(string maptype, string registratorType,Affine3d initPose,Affine3d sensorPose);
+  virtual void ProcessFrame(pcl::PointCloud<pcl::PointXYZ> &cloud, Eigen::Affine3d &Tnow, const Affine3d & Tmotion); //cloud is the current scan in robot frame,  Tnow is the current pose in world frame
   virtual bool ErrorStatus(string status="");
 protected:
   //virtual void GetParameters();//Get fuser specific parameters, map specific parameters are preferably read inside a class derived from map_paramers

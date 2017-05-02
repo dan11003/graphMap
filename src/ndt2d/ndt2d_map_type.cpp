@@ -4,16 +4,16 @@ using namespace std;
 
 using namespace lslgeneric;
 
-NDT2DMapType::NDT2DMapType(const Eigen::Affine3d &mapPose, NDT2DMapParamPtr param) : mapType(mapPose){
+NDT2DMapType::NDT2DMapType( NDT2DMapParamPtr param) : mapType(){
   if(param!=NULL){
     resolution_=param->resolution_;
     sizeX_= param->sizex_;
     sizeY_= param->sizey_;
     sizeZ_= param->sizez_;
-    sensorRange_=param->max_range_;
+    sensor_range_=param->max_range_;
     map_ = new lslgeneric::NDTMap(new lslgeneric::LazyGrid(resolution_));
-    map_->initialize(mapPose.translation()(0),mapPose.translation()(1),mapPose.translation()(2),param->sizex_,param->sizey_,param->sizez_);
-    cout<<"created ndt2dmap type at pose= \n"<<mapPose.translation()<<endl;
+    map_->initialize(0.0,0.0,0.0,param->sizex_,param->sizey_,param->sizez_);
+    cout<<"created ndt2dmap"<<endl;
   }
   else
     cerr<<"Cannot create instance of NDTmapHMT"<<std::endl;
@@ -23,7 +23,7 @@ NDT2DMapType::~NDT2DMapType(){}
 void NDT2DMapType::update(const Eigen::Affine3d &Tsensor,pcl::PointCloud<pcl::PointXYZ> &cloud){//update map, cloud is the scan, Tsensor is the pose where the scan was aquired.
 
   if(initialized_){
-    Eigen::Vector3d localMapSize(sensorRange_,sensorRange_,sizeZ_);
+    Eigen::Vector3d localMapSize(sensor_range_,sensor_range_,sizeZ_);
     map_->addPointCloudMeanUpdate(Tsensor.translation(),cloud,localMapSize, 1e5, 25, 2*sizeZ_, 0.06);
 
   }else{
