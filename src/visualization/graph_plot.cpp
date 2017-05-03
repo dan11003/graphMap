@@ -32,10 +32,7 @@ void graphPlot::PlotPoseGraph(GraphMapPtr graph){
     tf::poseEigenToMsg(pose_tmp,pose);
     poseArr.poses.push_back(pose);
   }
-  for(int i=0;i<5;i++){
     graphPublisher_->publish(poseArr);
-    sleep(1);
-  }
 }
 
 void graphPlot::CovarToMarker(const Eigen::Matrix3d &cov,const Eigen::Vector3d &mean,visualization_msgs::Marker &marker){
@@ -75,6 +72,7 @@ void graphPlot::sendMapToRviz(lslgeneric::NDTMap *mapPtr, ros::Publisher *mapPub
   marker.ns = "NDT";
   marker.type = visualization_msgs::Marker::SPHERE;
   marker.action = visualization_msgs::Marker::ADD;
+  marker.lifetime=ros::Duration(0.2);
 
   if(color==0){
     marker.color.a = 0.75;

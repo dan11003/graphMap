@@ -10,6 +10,7 @@ using namespace  std;
 namespace libgraphMap{
 
 typedef Eigen::Matrix<double,6,6> Matrix6d;
+
 using Eigen::Affine3d;
 class factor;
 typedef boost::shared_ptr<factor> factorPtr;

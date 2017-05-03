@@ -22,7 +22,7 @@ public:
   virtual void update(const Eigen::Affine3d &Tsensor, pcl::PointCloud<pcl::PointXYZ> &cloud);
   virtual NDTMap* GetMap() { return map_;}
 protected:
-  NDT2DMapType(NDT2DMapParamPtr param);
+  NDT2DMapType(mapParamPtr paramptr);
   NDTMap *map_;
 
 private:

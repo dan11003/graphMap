@@ -32,7 +32,8 @@ bool ndtd2dRegType::Register(mapTypePtr maptype,Eigen::Affine3d &Tnow, const Eig
   NDTMap *ptr=&ndlocal;
 
   graphPlot::SendLocalMapToRviz(ptr,0);
-  if(!enableRegistration_){
+  if(!enableRegistration_||!maptype->Initialized()){
+    cout<<"Registration disabled - motion based on odometry"<<endl;
     Tnow=Tnow*Tmotion;
     return true;
   }
@@ -48,6 +49,7 @@ bool ndtd2dRegType::Register(mapTypePtr maptype,Eigen::Affine3d &Tnow, const Eig
     if((diff.translation().norm() > maxTranslationNorm_ ||
         diff.rotation().eulerAngles(0,1,2).norm() > maxRotationNorm_) && checkConsistency_){
       fprintf(stderr,"****  NDTFuserHMT -- ALMOST DEFINATELY A REGISTRATION FAILURE *****\n");
+      cerr<<"Registration Failure"<<endl;
       Tnow = Tnow * Tmotion;
       return false;
     }else{

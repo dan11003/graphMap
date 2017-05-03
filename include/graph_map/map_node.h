@@ -16,12 +16,17 @@ namespace libgraphMap{
 /*!
 * ... Class to represent a node ...
 */
+
 class node{
 protected:
 public:
+  bool operator ==(const node& node_compare);
   virtual string ToString(){return "base node";}
   virtual Affine3d GetPose() const;
+  virtual bool WithinRadius(const Affine3d &pose, double &radius);
 protected:
+  node();
+  unsigned id_;
   Eigen::Affine3d pose_;
 };
 /*!
@@ -31,13 +36,13 @@ class mapNode:public node{
 
 public:
   virtual void updateMap(const Eigen::Affine3d &Tnow,pcl::PointCloud<pcl::PointXYZ> &cloud);
-
+  virtual bool Initialized(){return initialized_;}
   virtual mapTypePtr GetMap(){return map_;}
   virtual string ToString();
 protected:
   mapTypePtr map_;
   mapNode(const Eigen::Affine3d &pose,const mapParamPtr &mapparam);
-  unsigned int num_id_;
+  bool initialized_=false;
 private:
   friend class graphfactory;
   /*-----Boost serialization------*/

@@ -33,7 +33,6 @@
 
         <param name="pose_init_x" value="10.727" />
         <param name="pose_init_y" value="2.186" />
-        <!--param name="pose_init_t" value="0.01" !-->
         <param name="pose_init_t" value="0.01" />
 
         <param name="map_directory" value="$(find ndt_fuser)/maps/" />
@@ -49,6 +48,6 @@
 
 <arg name="path" default="$(find graph_map)/data/" />
 <arg name="file_1" default="mapping.bag" />
-<node pkg="rosbag" type="play" name="player" output="screen" args="--clock $(arg path)$(arg file_1)"/>
+<node pkg="rosbag" type="play" name="player" output="screen" args="--clock -q $(arg path)$(arg file_1)"/>
 <node pkg="tf2_ros" type="static_transform_publisher" name="laser_scan_fuser" args="0.695 -0.01 -0.007 0 0 0 1 fuser fuser_laser_link" />
 </launch>

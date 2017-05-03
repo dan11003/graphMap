@@ -26,14 +26,10 @@ public:
                                double max_range,
                                 std::string directory,
                                  bool _saveOnDelete);*/
-  void GetRosParamNDT2D();
+  void GetParametersFromRos();
 
   double resolution_;
-  double sizex_;
-  double sizey_;
-  double sizez_;
-  double max_range_;
-  double min_laser_range_;
+
   std::string directory_;
   bool saveOnDelete_, match2D_,beHMT,matchLaser;
 protected:

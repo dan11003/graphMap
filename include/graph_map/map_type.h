@@ -12,7 +12,7 @@
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/serialization/base_object.hpp>
 #include <stdio.h>
-
+#include "ros/ros.h"
 
 
 using namespace std;
@@ -27,9 +27,16 @@ class mapParam{
 public:
   virtual ~mapParam()=0;
   string getMapName() const{return mapName_;}
+  virtual string ToString();
+  double radius_;
+  double sizex_;
+  double sizey_;
+  double sizez_;
+  double max_range_;
+  double min_range_;
 protected:
-  mapParam(){}
-  bool initialized_;
+  virtual void GetParametersFromRos();
+  mapParam();
   string mapName_;
   /*-----Boost serialization------*/
   friend class boost::serialization::access;
@@ -53,11 +60,17 @@ public:
    * \param Tnow transformation from world to sensor frame
    * \param cloud data to update map with
    */
-
+  virtual bool Initialized() const{return initialized_;}
   virtual void update(const Eigen::Affine3d &Tnow,pcl::PointCloud<pcl::PointXYZ> &cloud)=0;
+
 protected:
-  mapType(){initialized_=false;}
-  double sizeX_,sizeY_,sizeZ_;
+  mapType(mapParamPtr param);
+  double radius_;
+  double sizex_;
+  double sizey_;
+  double sizez_;
+  double max_range_;
+  double min_range_;
   bool initialized_;
   string mapName_;
 
@@ -65,7 +78,8 @@ protected:
   friend class boost::serialization::access;
   template<class Archive>
   void serialize(Archive & ar, const unsigned int version){
-    ar & sizeX_&sizeY_&sizeZ_;
+    ar & sizex_ & sizey_ & sizez_;
+    ar & max_range_ & max_range_;
     ar & initialized_;
   }
   /*-----End of Boost serialization------*/
