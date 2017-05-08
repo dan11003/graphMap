@@ -7,8 +7,10 @@
 #include "graph_map/graph_map.h"
 #include "graph_map/reg_type.h"
 #include "ndt2d/ndtd2d_reg_type.h"
-
+#include "Eigen/Geometry"
 namespace libgraphMap{
+
+
 mapParamPtr graphfactory::CreateMapParam(string mapname){
   if(mapname.compare(ndt_map_type_name)==0){
     cout<<"Graphfactory: Created parameters for map type: \""<<ndt_map_type_name<<"\""<<endl;

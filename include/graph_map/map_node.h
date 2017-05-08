@@ -23,7 +23,7 @@ public:
   bool operator ==(const node& node_compare);
   virtual string ToString(){return "base node";}
   virtual Affine3d GetPose() const;
-  virtual bool WithinRadius(const Affine3d &pose, double &radius);
+  virtual bool WithinRadius(const Affine3d &pose, const double &radius);
 protected:
   node();
   unsigned id_;

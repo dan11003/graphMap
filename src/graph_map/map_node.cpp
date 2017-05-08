@@ -17,7 +17,7 @@ bool node::operator ==(const node& node_compare){
   else return false;
 }
 
-bool node::WithinRadius(const Affine3d &pose, double &radius){
+bool node::WithinRadius(const Affine3d &pose, const double &radius){
 
   double distance= Eigen::Vector3d(pose.translation()-pose_.translation()).norm();
   cout<<"distance"<<distance<<endl;

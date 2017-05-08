@@ -36,4 +36,9 @@ mapType::mapType(mapParamPtr param){
   min_range_=param->min_range_;
 }
 
+bool mapType::CompoundMapsByRadius(mapTypePtr target,const Affine3d &T_source,const Affine3d &T_target, double radius){
+  cout<<"Compunding map not possible in base class"<<endl;
+  return false;
+}
+
 }

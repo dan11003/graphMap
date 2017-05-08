@@ -1,3 +1,4 @@
+
 #include "ndt2d/ndtd2d_reg_type.h"
 namespace libgraphMap{
 
@@ -29,14 +30,14 @@ bool ndtd2dRegType::Register(mapTypePtr maptype,Eigen::Affine3d &Tnow, const Eig
   ndlocal.loadPointCloud(cloud,sensorRange_);
   ndlocal.computeNDTCells(CELL_UPDATE_MODE_SAMPLE_VARIANCE);
   Eigen::Affine3d Tinit = Tnow * Tmotion;//registration prediction
-  NDTMap *ptr=&ndlocal;
 
-  graphPlot::SendLocalMapToRviz(ptr,0);
+
   if(!enableRegistration_||!maptype->Initialized()){
     cout<<"Registration disabled - motion based on odometry"<<endl;
     Tnow=Tnow*Tmotion;
     return true;
   }
+
 
   //Get ndt map pointer
   NDT2DMapPtr MapPtr = boost::dynamic_pointer_cast< NDT2DMapType >(maptype);

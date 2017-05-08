@@ -6,6 +6,7 @@ ros::NodeHandle* graphPlot::nh_=NULL;
 ros::Publisher* graphPlot::localMapPublisher_=NULL;
 ros::Publisher* graphPlot::graphPublisher_=NULL;
 ros::Publisher* graphPlot::globalMapPublisher_=NULL;
+ros::Publisher* graphPlot::global2MapPublisher_=NULL;
 
 void graphPlot::Initialize(){
   cout<<"graph_plot: initialize"<<endl;
@@ -13,9 +14,13 @@ void graphPlot::Initialize(){
   graphPublisher_=    new ros::Publisher();
   localMapPublisher_= new ros::Publisher();
   globalMapPublisher_=new ros::Publisher();
+  global2MapPublisher_=new ros::Publisher();
+
   *localMapPublisher_=  nh_->advertise<visualization_msgs::MarkerArray>(NDT_LOCAL_MAP_TOPIC,10);
   *globalMapPublisher_= nh_->advertise<visualization_msgs::MarkerArray>(NDT_GLOBAL_MAP_TOPIC,10);
+  *global2MapPublisher_= nh_->advertise<visualization_msgs::MarkerArray>(NDT_GLOBAL2_MAP_TOPIC,10);
   *graphPublisher_=nh_->advertise<geometry_msgs::PoseArray>(GRAPH_TOPIC,10);
+
   initialized_=true;
 }
 void graphPlot::PlotPoseGraph(GraphMapPtr graph){
@@ -32,7 +37,7 @@ void graphPlot::PlotPoseGraph(GraphMapPtr graph){
     tf::poseEigenToMsg(pose_tmp,pose);
     poseArr.poses.push_back(pose);
   }
-    graphPublisher_->publish(poseArr);
+  graphPublisher_->publish(poseArr);
 }
 
 void graphPlot::CovarToMarker(const Eigen::Matrix3d &cov,const Eigen::Vector3d &mean,visualization_msgs::Marker &marker){
@@ -58,21 +63,25 @@ void graphPlot::CovarToMarker(const Eigen::Matrix3d &cov,const Eigen::Vector3d &
   marker.pose.position.z=mean(2);
 
 }
-void graphPlot::sendMapToRviz(lslgeneric::NDTMap *mapPtr, ros::Publisher *mapPublisher, string frame, int color,const Affine3d &offset){
+void graphPlot::sendMapToRviz(mean_vector &mean, cov_vector &cov, ros::Publisher *mapPublisher, string frame, int color,const Affine3d &offset,string ns,int markerType){
+  static unsigned int max_size=0;
   if(!initialized_)
     Initialize();
 
-  std::vector<lslgeneric::NDTCell*> ndts;
-  ndts = mapPtr->getAllCells();
 
+  if(max_size<mean.size())
+    max_size=mean.size();
+
+  cout<<"plotting "<<mean.size()<<" cells, however have previously plotted "<<max_size<<" cells"<<endl;
   visualization_msgs::MarkerArray marray;
   visualization_msgs::Marker marker;
+  marray.markers.clear();
   marker.header.frame_id = frame;
   marker.header.stamp = ros::Time();
-  marker.ns = "NDT";
-  marker.type = visualization_msgs::Marker::SPHERE;
+  marker.ns = ns;
+  marker.type = markerType;
   marker.action = visualization_msgs::Marker::ADD;
-  marker.lifetime=ros::Duration(0.2);
+  marker.lifetime=ros::Duration();
 
   if(color==0){
     marker.color.a = 0.75;
@@ -87,29 +96,81 @@ void graphPlot::sendMapToRviz(lslgeneric::NDTMap *mapPtr, ros::Publisher *mapPub
     marker.color.b = 0.0;
   }
   else if(color==2){
-    marker.color.a = 0.6 ;
-    marker.color.r = 0.0;
-    marker.color.g = 0.0;
+    marker.color.a = 0.4 ;
+    marker.color.r = 0.4;
+    marker.color.g = 0.6;
     marker.color.b = 1.0;
   }
-  for(unsigned int i=0;i<ndts.size();i++){
-    Eigen::Matrix3d cov = offset.linear()*ndts[i]->getCov()*offset.inverse().linear();
-    Eigen::Vector3d m = offset*ndts[i]->getMean();
-    CovarToMarker(cov,m,marker);
+  for(unsigned int i=0;i<mean.size();i++){
+    Eigen::Matrix3d cov_tmp=offset.linear()*cov[i]*offset.linear().transpose();
+    Eigen::Vector3d m_tmp = offset*mean[i];
+    CovarToMarker(cov_tmp,m_tmp,marker);
     marker.id = i;
+    marray.markers.push_back(marker);
+  }
+
+  marray.markers.push_back(marker);
+  for(int i=mean.size();i<max_size;i++){
+    marker.id =i;
     marray.markers.push_back(marker);
   }
   mapPublisher->publish(marray);
 
 }
 void graphPlot::SendLocalMapToRviz(lslgeneric::NDTMap *mapPtr,int color,const Affine3d &offset){
+  cov_vector cov;
+  mean_vector mean;
   if(!initialized_)
     Initialize();
-  sendMapToRviz(mapPtr,localMapPublisher_,"fuser",color,offset);
+  GetAllCellsMeanCov(mapPtr,cov,mean);
+  sendMapToRviz(mean,cov,localMapPublisher_,"fuser",color,offset,"local");
 }
+void graphPlot::GetAllCellsMeanCov(const lslgeneric::NDTMap *mapPtr,cov_vector &cov,mean_vector &mean){
+  cov.clear();
+  mean.clear();
+  std::vector<lslgeneric::NDTCell*>cells=mapPtr->getAllCells();
+  NDTCell *cell;
+  for(int i=0;i<cells.size();i++){
+    cov.push_back(cells[i]->getCov());
+    mean.push_back(cells[i]->getMean());
+   // delete cells[i];
+  }
+}
+void graphPlot::GetAllCellsMeanCov( std::vector<lslgeneric::NDTCell*>cells,cov_vector &cov,mean_vector &mean){
+  cov.clear();
+  mean.clear();
+  for(int i=0;i<cells.size();i++){
+    cov.push_back(cells[i]->getCov());
+    mean.push_back(cells[i]->getMean());
+  //  delete cells[i];
+  }
+}
+
 void graphPlot::SendGlobalMapToRviz(lslgeneric::NDTMap *mapPtr, int color,const Affine3d &offset){
+  cov_vector cov;
+  mean_vector mean;
   if(!initialized_)
     Initialize();
-  sendMapToRviz(mapPtr,globalMapPublisher_,"world",color,offset);
+
+  GetAllCellsMeanCov(mapPtr,cov,mean);
+  sendMapToRviz(mean,cov,globalMapPublisher_,"world",color,offset,"current");
 }
+void graphPlot::SendGlobal2MapToRviz(lslgeneric::NDTMap *mapPtr, int color,const Affine3d &offset){
+  cov_vector cov;
+  mean_vector mean;
+  if(!initialized_)
+    Initialize();
+  GetAllCellsMeanCov(mapPtr,cov,mean);
+  sendMapToRviz(mean,cov,globalMapPublisher_,"world",color,offset,"prev",visualization_msgs::Marker::CUBE);
+}
+void graphPlot::SendGlobal2MapToRviz(  std::vector<lslgeneric::NDTCell*>cells, int color,const Affine3d &offset){
+  cov_vector cov;
+  mean_vector mean;
+
+  if(!initialized_)
+    Initialize();
+  GetAllCellsMeanCov(cells,cov,mean);
+  sendMapToRviz(mean,cov,globalMapPublisher_,"world",color,offset,"prev",visualization_msgs::Marker::CUBE);
+}
+
 }

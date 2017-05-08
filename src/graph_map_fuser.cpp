@@ -22,28 +22,24 @@ void graphMapFuser::ProcessFrame(pcl::PointCloud<pcl::PointXYZ> &cloud, Eigen::A
   //in sensor frame
   Eigen::Affine3d T_world_to_local_map=graph_->GetCurrentNodePose().inverse(); //transformation from node to world frame
   Tnow=T_world_to_local_map*Tnow;//change frame to local map
+    cout<<"New frame:global Tnow=\n"<<(T_world_to_local_map.inverse()*Tnow).translation() <<endl;
   if(frameNr_>=0){
     lslgeneric::transformPointCloudInPlace(sensorPose_, cloud);//Transform cloud into robot frame before registrating
     cout<<"fuser: register"<<endl;
     registrator_->Register(graph_->GetCurrentNode()->GetMap(),Tnow,Tmotion,cloud);//Tnow will be updated to the actual pose of the robot according to ndt-d2d registration
-    Tnow=T_world_to_local_map.inverse()*Tnow;//map Tnow to world frame
-    Matrix6d cov;
-    cov.setOnes(6,6);
-    graph_->AutomaticMapInterchange(Tnow,cov);
-    T_world_to_local_map=graph_->GetCurrentNodePose().inverse();
-    Tnow=T_world_to_local_map*Tnow;//map Tnow back to local frame
+    graph_->AutomaticMapInterchange(Tnow,unit_covar,T_world_to_local_map);
   }
-  cout<<"local Tnow="<<Tnow.translation()<<endl;
-  cout<<"global Tnow="<<(T_world_to_local_map.inverse()*Tnow).translation() <<endl;
-  lslgeneric::transformPointCloudInPlace(Tnow, cloud);//Transform cloud to map frame, the cloud should have the correct placment in the world
+
+  lslgeneric::transformPointCloudInPlace(Tnow, cloud);//Transform cloud to map frame, The cloud chould new be centered around the robot pose in the map frame
   Eigen::Affine3d scanSourcePose=Tnow*sensorPose_;//calculate the source of the scan
 
-  graph_->GetCurrentNode()->updateMap(scanSourcePose,cloud);
+  graph_->GetCurrentNode()->updateMap(scanSourcePose,cloud);//Update map
   Tnow=T_world_to_local_map.inverse()*Tnow;//remap Tnow to global map frame
 
-  NDT2DMapPtr mapPtr = boost::dynamic_pointer_cast< NDT2DMapType >(graph_->GetCurrentNode()->GetMap());
+  NDT2DMapPtr curr_node = boost::dynamic_pointer_cast< NDT2DMapType >(graph_->GetCurrentNode()->GetMap());
+  graphPlot::SendGlobalMapToRviz(curr_node->GetMap(),1,T_world_to_local_map.inverse());
   graphPlot::PlotPoseGraph(graph_);
-  graphPlot::SendGlobalMapToRviz(mapPtr->GetMap(),1,T_world_to_local_map.inverse());
+
   frameNr_++;
 }
 
@@ -55,6 +51,5 @@ bool graphMapFuser::ErrorStatus(string status){
       status="No object instance found for graph or registrator";
       return true;
     }
-
   }
 }

@@ -33,7 +33,7 @@
 
         <param name="pose_init_x" value="10.727" />
         <param name="pose_init_y" value="2.186" />
-        <param name="pose_init_t" value="0.01" />
+        <param name="pose_init_t" value="0.00" />
 
         <param name="map_directory" value="$(find ndt_fuser)/maps/" />
 

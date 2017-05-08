@@ -11,10 +11,16 @@ namespace libgraphMap{
 
 typedef Eigen::Matrix<double,6,6> Matrix6d;
 
+const Matrix6d unit_covar = (Eigen::Matrix<double, 6, 6>() << 0.1,0.0,0.0,0.0,0.0,0.0,
+                                                              0.0,0.1,0.0,0.0,0.0,0.0,
+                                                              0.0,0.0,0.1,0.0,0.0,0.0,
+                                                              0.0,0.0,0.0,0.01,0.0,0.0,
+                                                              0.0,0.0,0.0,0.0,0.01,0.0,
+                                                              0.0,0.0,0.0,0.0,0.0,0.01).finished();
+using Eigen::Vector3d;
 using Eigen::Affine3d;
 class factor;
 typedef boost::shared_ptr<factor> factorPtr;
-
 
 /*Registration types */
 class registrationType;

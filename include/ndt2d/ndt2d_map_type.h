@@ -9,7 +9,8 @@
 #include <boost/serialization/base_object.hpp>
 #include <ndt_map/ndt_map.h>
 #include <ndt_map/ndt_map_hmt.h>
-
+#include "visualization/graph_plot.h"
+#include "visualization/graph_plot.h"
 #include <ndt_map/pointcloud_utils.h>
 //#include <ndt_fuser/motion_model_2d.h>
 #define ndt_map_type_name "ndt_2d_map"
@@ -21,7 +22,8 @@ public:
   ~NDT2DMapType();
   virtual void update(const Eigen::Affine3d &Tsensor, pcl::PointCloud<pcl::PointXYZ> &cloud);
   virtual NDTMap* GetMap() { return map_;}
-protected:
+  //Advanced
+  virtual bool CompoundMapsByRadius(mapTypePtr target,const Affine3d &T_source,const Affine3d &T_target, double radius);
   NDT2DMapType(mapParamPtr paramptr);
   NDTMap *map_;
 

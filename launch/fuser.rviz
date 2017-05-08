@@ -186,6 +186,13 @@ Visualization Manager:
       Position Tolerance: 0.100000001
       Topic: /graph_node/fuser_odom
       Value: true
+    - Class: rviz/Axes
+      Enabled: true
+      Length: 1
+      Name: Axes
+      Radius: 0.100000001
+      Reference Frame: <Fixed Frame>
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -210,24 +217,24 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 25.6179504
+      Distance: 29.6555481
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.0599999987
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 1.16803062
-        Y: -0.0236780345
-        Z: -0.0809412599
-      Focal Shape Fixed Size: true
+        X: -2.01722765
+        Y: -0.281757563
+        Z: -1.32469499
+      Focal Shape Fixed Size: false
       Focal Shape Size: 0.0500000007
       Name: Current View
       Near Clip Distance: 0.00999999978
-      Pitch: 1.50979638
+      Pitch: 1.47539771
       Target Frame: fuser
       Value: Orbit (rviz)
-      Yaw: 6.14858294
+      Yaw: 3.04358292
     Saved:
       - Class: rviz/Orbit
         Distance: 39.1665726
