@@ -12,7 +12,8 @@
 #define NDT_GLOBAL_MAP_TOPIC "NDTglobalMap"
 #define NDT_GLOBAL2_MAP_TOPIC "NDTglobal2Map"
 #define NDT_LOCAL_MAP_TOPIC  "NDTlocalMap"
-#define GRAPH_TOPIC "graphMap"
+#define GRAPH_POSE_TOPIC "graphMap"
+#define GRAPH_INFO_TOPIC "graphInfo"
 namespace libgraphMap{
 using namespace std;
 using Eigen::Affine3d;
@@ -39,7 +40,7 @@ protected:
   static ros::NodeHandle *nh_;
   static ros::Publisher *localMapPublisher_;
   static ros::Publisher *globalMapPublisher_,*global2MapPublisher_;
-  static ros::Publisher *graphPublisher_;
+  static ros::Publisher *graphPosePublisher_, *graphInfoPublisher_;
 };
 
 }

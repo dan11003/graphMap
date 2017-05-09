@@ -135,7 +135,7 @@ Visualization Manager:
       Marker Topic: /NDTlocalMap
       Name: MarkerArray
       Namespaces:
-        NDT: true
+        {}
       Queue Size: 1000
       Value: true
     - Class: rviz/MarkerArray
@@ -143,7 +143,8 @@ Visualization Manager:
       Marker Topic: /NDTglobalMap
       Name: MarkerArray
       Namespaces:
-        NDT: true
+        current: true
+        prev: true
       Queue Size: 1000
       Value: true
     - Alpha: 1
@@ -193,6 +194,14 @@ Visualization Manager:
       Radius: 0.100000001
       Reference Frame: <Fixed Frame>
       Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /graphInfo
+      Name: MarkerArray
+      Namespaces:
+        graphInfo: true
+      Queue Size: 100
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -217,7 +226,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 29.6555481
+      Distance: 144.929993
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.0599999987
         Stereo Focal Distance: 1
