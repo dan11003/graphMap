@@ -1,5 +1,6 @@
 #include "visualization/graph_plot.h"
 #include "graph_map/graph_map.h"
+
 namespace libgraphMap{
 bool graphPlot::initialized_=false;
 ros::NodeHandle* graphPlot::nh_=NULL;

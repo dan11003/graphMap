@@ -328,7 +328,7 @@ public:
     laser_publisher_.publish(msg_out);
     pcl::PointXYZ pt;
     if(nb_added_clouds_%3==0){
-    plotter_.plotScan(msg_out,ScanPlot::rangeAnglePlot,"[-3.14:3.14]","[-20:20]");
+    plotter_.plot(msg_out,ScanPlot::RangeAngle);
     }
 
     //add some variance on z
