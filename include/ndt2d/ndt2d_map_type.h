@@ -30,6 +30,7 @@ public:
 private:
   double resolution_,resolution_local_factor=1.;
   double sensor_range_;
+  bool enable_mapping_=true;
   friend class graphfactory;
   void InitializeMap(const Eigen::Affine3d &Td,pcl::PointCloud<pcl::PointXYZ> &cloud);
 

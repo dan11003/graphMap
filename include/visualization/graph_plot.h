@@ -35,6 +35,8 @@ public:
   static void PlotPoseGraph(GraphMapPtr graph);
 
 protected:
+  static void makeRightHanded( Eigen::Matrix3d& eigenvectors, Eigen::Vector3d& eigenvalues);
+  static void computeShapeScaleAndOrientation3D(const Eigen::Matrix3d& covariance, Eigen::Vector3d& scale, Eigen::Quaterniond& orientation);
   static void Initialize();
   static bool initialized_;
   static ros::NodeHandle *nh_;

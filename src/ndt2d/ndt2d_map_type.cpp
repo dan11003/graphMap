@@ -8,6 +8,7 @@ NDT2DMapType::NDT2DMapType( mapParamPtr paramptr) : mapType(paramptr){
   NDT2DMapParamPtr param = boost::dynamic_pointer_cast< NDT2DMapParam >(paramptr);//Should not be NULL
   if(param!=NULL){
     resolution_=param ->resolution_;
+    enable_mapping_=param->enable_mapping_;
     map_ = new lslgeneric::NDTMap(new lslgeneric::LazyGrid(resolution_));
     map_->initialize(0.0,0.0,0.0,param->sizex_,param->sizey_,param->sizez_);
     cout<<"created ndt2dmap"<<endl;
@@ -19,11 +20,12 @@ NDT2DMapType::~NDT2DMapType(){}
 
 void NDT2DMapType::update(const Eigen::Affine3d &Tsensor,pcl::PointCloud<pcl::PointXYZ> &cloud){//update map, cloud is the scan, Tsensor is the pose where the scan was aquired.
 
-  if(initialized_){
+  if(initialized_ && enable_mapping_){
     Eigen::Vector3d localMapSize(max_range_,max_range_,sizez_);
     map_->addPointCloudMeanUpdate(Tsensor.translation(),cloud,localMapSize, 1e5, 25, 2*sizez_, 0.06);
-
-  }else{
+    cout<<"update map"<<endl;
+  }
+  else if(!initialized_){
     InitializeMap(Tsensor,cloud);
     initialized_ = true;
   }
@@ -36,14 +38,11 @@ void NDT2DMapType::InitializeMap(const Eigen::Affine3d &Tsensor,pcl::PointCloud<
 bool NDT2DMapType::CompoundMapsByRadius(mapTypePtr target,const Affine3d &T_source,const Affine3d &T_target, double radius){
 
   Affine3d Tdiff=Affine3d::Identity();
-  Tdiff.translation()=T_target.translation()-T_source.translation();
-  pcl::PointXYZ center_pcl(Tdiff.translation()(0),Tdiff.translation()(1),Tdiff.translation()(2));
-  cout<<"from=\n"<<T_source.translation()<<endl;
-  cout<<"To=\n"<<T_target.translation()<<endl;
-  cout<<"Translatopn between maps=\n"<<Tdiff.translation()<<endl;
+   Tdiff=T_source.inverse()*T_target;
+   pcl::PointXYZ center_pcl(Tdiff.translation()(0),Tdiff.translation()(1),Tdiff.translation()(2));
   if( NDT2DMapPtr targetPtr=boost::dynamic_pointer_cast<NDT2DMapType>(target) ){
     cout<<"dynamic casted pointer"<<endl;
-    if(resolution_!=targetPtr->resolution_)
+    if(resolution_!=targetPtr->resolution_)//checking if source and target have same resolution, they shoould have.
       return false;
 
     if(radius==-1)//if radius is not defined, match rcenter_pcladius to size of new map
@@ -62,7 +61,6 @@ bool NDT2DMapType::CompoundMapsByRadius(mapTypePtr target,const Affine3d &T_sour
       Eigen::Vector3d mean=Tdiff.inverse()*cells[i]->getMean();
       targetPtr->GetMap()->addDistributionToCell(cov,mean,cells[i]->getN());
     }
-    graphPlot::SendGlobal2MapToRviz(cells,0,T_source);
 
   }
 

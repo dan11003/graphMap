@@ -21,7 +21,7 @@ protected:
   double translationRegistrationDelta_, rotationRegistrationDelta_;
   double sensorRange_;
   double mapSizeZ_;
-  registrationType(regParamPtr regparam);
+  registrationType(const Affine3d &sensor_pose,regParamPtr regparam);
   Eigen::Affine3d sensorPose_;//Translation between robot and sensor frame
 private:
   friend class graphfactory;

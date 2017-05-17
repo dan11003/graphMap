@@ -51,7 +51,8 @@ set (${PROJECT_NAME}_LIB_SRCS
     src/graphfactory.cpp
     src/visualization/graph_plot.cpp
     src/lidarUtils/lidar_utilities.cpp
-    #src/graph_map_fuser_node.cpp
+    src/template/template_map_type.cpp
+    src/template/template_reg_type.cpp
     )
 add_library(${PROJECT_NAME} ${${PROJECT_NAME}_LIB_SRCS})
 add_executable(test_graph test/test_graph.cpp )

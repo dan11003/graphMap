@@ -1,17 +1,22 @@
 <?xml version="1.0"?>
 <launch>
   <node pkg="graph_map" type="graph_map_fuser_node" name="graph_node" output="screen">
+
         <param name="map_type" value="ndt_2d_map" />
         <param name="registration_type" value="ndt_d2d_reg" />
+        <param name="use_submap" value="true" />
+        <param name="interchange_radius" value="6.0" />
 
-        <param name="useOdometry" value="true" />
-
-        <param name="laser_topic" value="/laserscan" />
         <param name="enable_registration" value="true" />
-        <param name="matchLaser" value="true" />
-
+        <param name="enable_mapping" value="true" />
         <param name="registration_2D" value="true" />
         <param name="check_consistency" value="true" />
+
+        <param name="matchLaser" value="false" />
+        <param name="laser_topic" value="/laserscan" />
+        <!--<param name="points_topic" value="/velodyne_points" /-->
+        <param name="useOdometry" value="true" />
+        <param name="odometry_topic" value="/vmc_navserver/odom" />
 
         <param name="max_translation_norm" value="0.4" />
         <param name="max_rotation_norm" value="0.78539816339" />
@@ -20,9 +25,9 @@
         <param name="size_x_meters" value="50" />
         <param name="size_y_meters" value="50" />
         <param name="size_z_meters" value="0.8" />
-        <param name="resolution" value="0.4" />
-        <param name="laser_variance_z" value="0.02" />
 
+        <param name="resolution" value="0.2" />
+        <param name="laser_variance_z" value="0.02" />
         <param name="sensor_range" value="20." />
         <param name="min_laser_range" value="0.6" />
 
@@ -37,7 +42,7 @@
 
         <param name="map_directory" value="$(find ndt_fuser)/maps/" />
 
-        <param name="odometry_topic" value="/vmc_navserver/odom" />
+
         <param name="visualize" value="true" />
         <param name="plotGTTrack" value="true" />
         <param name="initPoseFromGT" value="true" />

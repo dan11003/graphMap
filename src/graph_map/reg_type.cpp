@@ -6,8 +6,10 @@ namespace libgraphMap{
 
 
 /* -------Registration type---------------- */
-registrationType::registrationType(regParamPtr regparam){
+registrationType::registrationType(const Eigen::Affine3d &sensor_pose, regParamPtr regparam){
   if(regparam!=NULL){
+  sensorPose_=sensor_pose;
+  cout<<"created registration with sensor pose=\n"<<sensor_pose.translation()<<"\n linear=\n"<<sensor_pose.linear()<<endl;
   enableRegistration_ = regparam->enableRegistration_;
   registration2d_     = regparam->registration2d_;
   checkConsistency_   = regparam->checkConsistency_;
@@ -37,7 +39,7 @@ void registrationParameters::GetParametersFromRos(){
   ros::NodeHandle nh("~");//base class parameters
   cout<<"reading base class registration parameters"<<endl;
   nh.param("enable_registration",enableRegistration_,true);
-  nh.param("registration_2D",registration2d_,true);
+  nh.param("registration_2D",registration2d_,false);
   nh.param("check_consistency",checkConsistency_,true);
   nh.param("sensor_range",sensorRange_,20.0);
   nh.param("size_z_meters",mapSizeZ_,0.8);
@@ -45,7 +47,7 @@ void registrationParameters::GetParametersFromRos(){
   nh.param("max_rotation_norm",maxRotationNorm_,M_PI/4);
 
   // translationRegistrationDelta_; vad för värde?
-    // rotationRegistrationDelta_;
+  // rotationRegistrationDelta_;
 }
 
 

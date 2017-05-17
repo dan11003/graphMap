@@ -3,11 +3,10 @@
 namespace libgraphMap{
 
 
-ndtd2dRegType::ndtd2dRegType(regParamPtr paramptr):registrationType(paramptr){
+ndtd2dRegType::ndtd2dRegType(const Affine3d &sensor_pose, regParamPtr paramptr):registrationType(sensor_pose,paramptr){
 
   ndtd2dregParamPtr param_ptr = boost::dynamic_pointer_cast< ndtd2dRegParam >(paramptr);//Should not be NULL
   if(param_ptr!=NULL){
-
     resolution_=param_ptr->resolution_;
     resolutionLocalFactor_=param_ptr->resolutionLocalFactor_;
     //NDTMatcherD2D_2D parameters
@@ -31,10 +30,12 @@ bool ndtd2dRegType::Register(mapTypePtr maptype,Eigen::Affine3d &Tnow, const Eig
   ndlocal.computeNDTCells(CELL_UPDATE_MODE_SAMPLE_VARIANCE);
   Eigen::Affine3d Tinit = Tnow * Tmotion;//registration prediction
 
+  //NDTMap * ptrmap=&ndlocal;
+  //graphPlot::SendLocalMapToRviz(ptrmap,0,sensorPose_);
 
   if(!enableRegistration_||!maptype->Initialized()){
     cout<<"Registration disabled - motion based on odometry"<<endl;
-    Tnow=Tnow*Tmotion;
+    Tnow=Tinit;
     return true;
   }
 
@@ -42,24 +43,41 @@ bool ndtd2dRegType::Register(mapTypePtr maptype,Eigen::Affine3d &Tnow, const Eig
   //Get ndt map pointer
   NDT2DMapPtr MapPtr = boost::dynamic_pointer_cast< NDT2DMapType >(maptype);
   NDTMap *globalMap=MapPtr->GetMap();
-  cout<<"number of cell in (global/local) map"<<globalMap->getAllCells().size()<<","<<ndlocal.getAllCells().size()<<endl;
+  // cout<<"number of cell in (global/local) map"<<globalMap->getAllCells().size()<<","<<ndlocal.getAllCells().size()<<endl;
+  bool matchSuccesfull;
+  if(registration2d_){
+    matchSuccesfull=matcher2D_.match(*globalMap, ndlocal,Tinit,true);
+  }
+  else if(!registration2d_){
+    matchSuccesfull=matcher3D_.match( *globalMap, ndlocal,Tinit,true);
+  }
 
-  if(matcher2D_.match(*globalMap, ndlocal,Tinit,true))
-  {
-    Eigen::Affine3d diff = (Tnow * Tmotion).inverse() * Tinit;//difference between prediction and registration
-    if((diff.translation().norm() > maxTranslationNorm_ ||
-        diff.rotation().eulerAngles(0,1,2).norm() > maxRotationNorm_) && checkConsistency_){
-      fprintf(stderr,"****  NDTFuserHMT -- ALMOST DEFINATELY A REGISTRATION FAILURE *****\n");
-      cerr<<"Registration Failure"<<endl;
+  if(matchSuccesfull){
+    Eigen::Affine3d diff = (Tnow * Tmotion).inverse()*Tinit;//difference between prediction and registration
+    Vector3d diff_angles=Vector3d(diff.rotation().eulerAngles(0,1,2));
+    Eigen::AngleAxisd diff_rotation_(diff.rotation());
+
+
+    if(checkConsistency_ && diff.translation().norm() > maxTranslationNorm_ ){
+      cerr<<"registration failure: Translation too high"<<endl;
+      cerr<<"movement="<<diff.translation().norm()<<"m  >  "<<diff.translation().norm()<<endl;
       Tnow = Tnow * Tmotion;
       return false;
-    }else{
-      Tnow = Tinit;
-      return true;
     }
+    if(checkConsistency_ &&(diff_rotation_.angle() > maxRotationNorm_) ){
+      cerr<<"registration failure: Rotation too high"<<endl;
+      cerr<<"movement="<<diff_rotation_.angle()<<"rad  >  "<<maxRotationNorm_<<endl;
+      //Tnow = Tnow * Tmotion;
+      //return false;
+    }
+    Tnow = Tinit;
+    return true;
   }
-  cerr<<"Registration unsuccesfully"<<endl;
+  else{
+    Tnow = Tnow * Tmotion;
   return false;
+  cerr<<"Registration unsuccesfull"<<endl;
+  }
 }
 
 
@@ -75,8 +93,8 @@ ndtd2dRegParam::ndtd2dRegParam():registrationParameters(){
 }
 void ndtd2dRegParam::GetParametersFromRos(){
   ros::NodeHandle nh("~");//base class parameters
-  registration2d_=true;
-  nh.param("resolution",resolution_,0.4);
+  nh.param("registration_2D",registration2d_,true);
+  nh.param("resolution",resolution_,1.0);
   nh.param("resolutionLocalFactor",resolutionLocalFactor_,1.0);
 }
 

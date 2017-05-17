@@ -34,7 +34,7 @@ void ScanPlot::multiPlot(const sensor_msgs::LaserScan &scan,const scanRepresenta
 
 if(plot_type==RangeAngle){
   scanToPairVector(scan,plot_type,data_set);
-  gp<<"set multiplot layout 2,2 columnsfirst margins 0.1,0.9,0.1,0.9 spacing 0.1"<<endl;
+  gp<<"st multiplot layout 2,2 columnsfirst margins 0.1,0.9,0.1,0.9 spacing 0.1"<<endl;
   plotScanRangeAngle(scan,PlotOptsX,PlotOptsY);
   plotScanXY(scan,PlotOptsX,PlotOptsY);
   gp<<"unset multiplot"<<endl;

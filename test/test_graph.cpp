@@ -33,7 +33,8 @@ int main(int argc, char **argv){
   cov=diag1; //Create covariance to represent uncertainty betweem mpde
 
   mapParamPtr param=graphfactory::CreateMapParam(maptype);
-  GraphMapPtr graph=graphfactory::CreateGraph(initPose,param);
+  GraphParamPtr graphparam=graphfactory::CreateGraphParam();
+  GraphMapPtr graph=graphfactory::CreateGraph(initPose,param,graphparam);
 
   cout<<"size of graph :"<<graph->MapSize()<<endl;
 

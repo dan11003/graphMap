@@ -25,9 +25,10 @@ public:
   ~ndtd2dRegType();
   bool Register(mapTypePtr maptype, Eigen::Affine3d &Tnow, const Eigen::Affine3d &Tmotion, pcl::PointCloud<pcl::PointXYZ> &cloud);//This methods attempts to register the point cloud versus the map using Tmotion as a first guess
 protected:
-  ndtd2dRegType(regParamPtr paramptr);
+  ndtd2dRegType(const Eigen::Affine3d &sensor_pose, regParamPtr paramptr);
   double resolution_,resolutionLocalFactor_;
   NDTMatcherD2D_2D matcher2D_;
+  NDTMatcherD2D matcher3D_;
 private:
   friend class graphfactory;
 };

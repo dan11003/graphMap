@@ -3,11 +3,20 @@
 using namespace std;
 namespace libgraphMap{
 
-GraphMap::GraphMap(const Affine3d &nodepose,const mapParamPtr &mapparam){
+GraphMap::GraphMap(const Affine3d &nodepose,const mapParamPtr &mapparam,const GraphParamPtr graphparam){
   prevNode_=NULL;
   currentNode_=graphfactory::CreateMapNode(nodepose,mapparam);//The first node to be added
   nodes_.push_back(currentNode_);
   mapparam_=mapparam;
+  use_submap_=graphparam->use_submap_;
+  interchange_radius_=graphparam->interchange_radius_;
+  compound_radius_=graphparam->compound_radius_;
+
+  cout<<"interchange_radius_ set to: "<<interchange_radius_<<endl;
+  cout<<"use_submap_ set to: "<<use_submap_<<endl;
+
+  //double min_size=mapparam->sizex_< mapparam->sizey_? mapparam->sizex_ : mapparam->sizey_; //select min map length
+  //interchange_radius_=min_size/2-mapparam_->max_range_;//
 
 }
 mapNodePtr GraphMap::GetCurrentNode(){
@@ -51,7 +60,7 @@ bool GraphMap::SwitchToClosestMapNode(Affine3d &Tnow, const Matrix6d &cov, Affin
   cout<<"currently at pose="<<Tnow.translation()<<endl;
   for(std::vector<NodePtr>::iterator itr_node = nodes_.begin(); itr_node != nodes_.end(); ++itr_node) { //loop thorugh all existing nodes
     if( (*itr_node)->WithinRadius(Tnow,radius) ){ //if a node is within radius of pose and the node is of type "map type"
-      if(  mapNodePtr found_map_node_ptr = boost::dynamic_pointer_cast< mapNode >(*itr_node) ){ //A map node has now been found within radius)
+      if(  mapNodePtr found_map_node_ptr = boost::dynamic_pointer_cast< MapNode >(*itr_node) ){ //A map node has now been found within radius)
         double found_distance= Eigen::Vector3d(Tnow.translation()-(*itr_node)->GetPose().translation()).norm();//Euclidian distance between robot pose and map node pose;
         cout<<"Node is within range of previously created map, distance="<<found_distance<<endl;
         if(closest_distance==-1.0|| found_distance<closest_distance){
@@ -72,27 +81,41 @@ bool GraphMap::SwitchToClosestMapNode(Affine3d &Tnow, const Matrix6d &cov, Affin
   return node_found;
 }
 
-void GraphMap::AutomaticMapInterchange(Affine3d &Tnow, const Matrix6d &cov, Affine3d & T_world_to_local_map){
-  Tnow=T_world_to_local_map.inverse()*Tnow;//map Tnow to world frame
-  // double min_size=mapparam_->sizex_< mapparam_->sizey_? mapparam_->sizex_ : mapparam_->sizey_; //select min map length
-  //condition to never see past map size : radius_+sensorRange < min_size/2 of map
-  double keep_map_radius=5;//min_size/2-mapparam_->max_range_;
-  cout<<"keep map radius="<<keep_map_radius<<endl;
+bool GraphMap::AutomaticMapInterchange(Affine3d &Tnow, const Matrix6d &cov, Affine3d & T_world_to_local_map){
+  bool mapChanged=false;
+  if(use_submap_==false)
+    return false;
 
-  if(! currentNode_->WithinRadius(Tnow,keep_map_radius)){ //No longer within radius of node
-    cout<<"Left boundries of previous map, will  search through "<<nodes_.size()<<" node(s) to find a map node within range of"<<keep_map_radius<<"m"<<endl;
-    if( SwitchToClosestMapNode(Tnow,cov,T_world_to_local_map,keep_map_radius))
+  Tnow=T_world_to_local_map.inverse()*Tnow;//map Tnow to world frame
+  if(! currentNode_->WithinRadius(Tnow,interchange_radius_)){ //No longer within radius of node
+    mapChanged=true;
+    cout<<"Left boundries of previous map, will  search through "<<nodes_.size()<<" node(s) to find a map node within range of"<<interchange_radius_<<"m"<<endl;
+    if( SwitchToClosestMapNode(Tnow,cov,T_world_to_local_map,interchange_radius_)){
       cout<<"switched to node="<<currentNode_->GetPose().translation()<<endl;
+    }
     else{
       cout<<"No node was found, will create a new map pose."<<endl;
       prevNode_=currentNode_;
       NDT2DMapPtr prev_ndt_map = boost::dynamic_pointer_cast< NDT2DMapType >(prevNode_->GetMap());
       AddMapNode(mapparam_,T_world_to_local_map*Tnow,cov); //if no node already exists, create a new node
-      prevNode_->GetMap()->CompoundMapsByRadius(currentNode_->GetMap(),prevNode_->GetPose(),currentNode_->GetPose(),5.0);
+      //Tdiff.translation()=T_target.translation()-T_source.translation();
+      //pcl::PointXYZ center_pcl(Tdiff.translation()(0),Tdiff.translation()(1),Tdiff.translation()(2));
+      prevNode_->GetMap()->CompoundMapsByRadius(currentNode_->GetMap(),prevNode_->GetPose(),currentNode_->GetPose(),compound_radius_);
     }
   }
   T_world_to_local_map=currentNode_->GetPose().inverse();
   Tnow=T_world_to_local_map*Tnow;//map Tnow from global to new local frame
+  return mapChanged;
 }
 
+
+GraphParam::GraphParam(){
+  GetParametersFromRos();
+}
+void GraphParam::GetParametersFromRos(){
+  ros::NodeHandle nh("~");
+  nh.param("use_submap",use_submap_,false);
+  nh.param("interchange_radius",interchange_radius_,100.0);
+  nh.param("compound_radius",compound_radius_,100.0);
+}
 }

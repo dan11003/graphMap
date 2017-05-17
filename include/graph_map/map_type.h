@@ -34,6 +34,7 @@ public:
   double sizez_;
   double max_range_;
   double min_range_;
+  bool enable_mapping_;
 protected:
   virtual void GetParametersFromRos();
   mapParam();

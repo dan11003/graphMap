@@ -10,7 +10,7 @@ NDT2DMapParam::NDT2DMapParam(){
 void NDT2DMapParam::GetParametersFromRos(){
   ros::NodeHandle nh("~");
   cout<<"reading parameters from ros inside GetRosParamNDT2D"<<endl;
-  nh.param("resolution",resolution_,0.20);
+  nh.param("resolution",resolution_,1.0);
   //nh.param("laser_variance_z",varz,resolution/4);
 }
 

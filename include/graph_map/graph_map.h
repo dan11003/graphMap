@@ -12,6 +12,8 @@
 #include "visualization/graph_plot.h"
 #include "ndt_map/ndt_map.h"
 #include "ndt2d/ndt2d_map_type.h"
+#include "ros/ros.h"
+#include "ros/node_handle.h"
 
 namespace libgraphMap{
 using namespace lslgeneric;
@@ -28,7 +30,7 @@ public:
    * \param cov contain the movement uncertainty accumulated since last node
    * \param T_world_to_local pre: Not used: Post T_world_to_local contain the mapping from world to the current local mapNode frame.
    */
-  void AutomaticMapInterchange(Affine3d &Tnow, const Matrix6d &cov, Affine3d & T_world_to_local_map);
+  bool AutomaticMapInterchange(Affine3d &Tnow, const Matrix6d &cov, Affine3d & T_world_to_local_map);
   virtual void AddMapNode(const mapParamPtr &mapparam,const Eigen::Affine3d &diff,const Matrix6d &cov);//
   mapNodePtr GetCurrentNode();
   mapNodePtr GetPreviousNode();
@@ -37,14 +39,29 @@ public:
   virtual Affine3d GetNodePose(int nodeNr);
   virtual Eigen::Affine3d GetCurrentNodePose();
   virtual Eigen::Affine3d GetPreviousNodePose();
-
 protected:
-  GraphMap(const Eigen::Affine3d &nodepose, const mapParamPtr &mapparam);
+  GraphMap(const Eigen::Affine3d &nodepose, const mapParamPtr &mapparam, const GraphParamPtr graphparam);
   bool SwitchToClosestMapNode(Affine3d &Tnow, const Matrix6d &cov, Affine3d & T_world_to_local_map,const double radius);
   mapNodePtr currentNode_,prevNode_;//The current node
   std::vector<NodePtr> nodes_;//Vector of all nodes in graph
   std::vector<factorPtr> factors_;
   mapParamPtr mapparam_;
+
+  bool use_submap_;
+  double interchange_radius_;
+  double compound_radius_;
+private:
+  friend class graphfactory;
+};
+
+class GraphParam{
+public:
+  bool use_submap_;
+  double interchange_radius_;
+  double compound_radius_;
+protected:
+  GraphParam();
+  void GetParametersFromRos();
 private:
   friend class graphfactory;
 };

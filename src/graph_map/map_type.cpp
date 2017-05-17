@@ -14,6 +14,7 @@ void mapParam::GetParametersFromRos(){
   nh.param("size_x_meters",sizex_,20.);
   nh.param("size_y_meters",sizey_,20.);
   nh.param("size_z_meters",sizez_,20.);
+  nh.param("enable_mapping",enable_mapping_,true);
   cout<<"read mapType parameters from ros"<<endl;
   cout<<ToString()<<endl;
 }
