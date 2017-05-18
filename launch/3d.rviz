@@ -43,7 +43,7 @@ Visualization Manager:
   Class: ""
   Displays:
     - Alpha: 0.5
-      Cell Size: 0.400000006
+      Cell Size: 1
       Class: rviz/Grid
       Color: 160; 160; 164
       Enabled: true
@@ -57,7 +57,7 @@ Visualization Manager:
         Y: 0.385399997
         Z: 0
       Plane: XY
-      Plane Cell Count: 100
+      Plane Cell Count: 40
       Reference Frame: <Fixed Frame>
       Value: true
     - Alpha: 1
@@ -79,13 +79,13 @@ Visualization Manager:
     - Angle Tolerance: 0.100000001
       Class: rviz/Odometry
       Color: 255; 25; 0
-      Enabled: false
+      Enabled: true
       Keep: 5000
-      Length: 0.200000003
+      Length: 0.5
       Name: Odometry
       Position Tolerance: 0.100000001
       Topic: /vmc_navserver/odom
-      Value: false
+      Value: true
     - Angle Tolerance: 0.100000001
       Class: rviz/Odometry
       Color: 255; 255; 0
@@ -101,8 +101,8 @@ Visualization Manager:
       Frame Timeout: 15
       Frames:
         All Enabled: false
-        base_laser_link:
-          Value: false
+        fuser:
+          Value: true
         odom_base_link:
           Value: false
         state_base_link:
@@ -118,11 +118,11 @@ Visualization Manager:
       Show Names: true
       Tree:
         world:
+          fuser:
+            {}
           odom_base_link:
             {}
           state_base_link:
-            base_laser_link:
-              {}
             velodyne:
               {}
       Update Interval: 0
@@ -252,24 +252,24 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 14.9028215
+      Distance: 45.3371582
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.0599999987
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 11.6087494
-        Y: 3.39857864
-        Z: -1.91644955
+        X: 119.304512
+        Y: 141.762802
+        Z: -14.0173941
       Focal Shape Fixed Size: false
       Focal Shape Size: 0.0500000007
       Name: Current View
       Near Clip Distance: 0.00999999978
-      Pitch: 1.47479641
+      Pitch: 1.28979659
       Target Frame: world
       Value: Orbit (rviz)
-      Yaw: 0.0435824692
+      Yaw: 6.14493847
     Saved:
       - Class: rviz/Orbit
         Distance: 39.1665726

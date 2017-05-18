@@ -47,6 +47,7 @@
 typedef message_filters::sync_policies::ApproximateTime<sensor_msgs::LaserScan, nav_msgs::Odometry> LaserOdomSync;
 typedef message_filters::sync_policies::ApproximateTime<sensor_msgs::LaserScan, geometry_msgs::PoseStamped> LaserPoseSync;
 typedef message_filters::sync_policies::ApproximateTime<sensor_msgs::PointCloud2, nav_msgs::Odometry> PointsOdomSync;
+typedef message_filters::sync_policies::ApproximateTime<sensor_msgs::PointCloud2, nav_msgs::Odometry> PointsGTOdomSync;
 typedef message_filters::sync_policies::ApproximateTime<sensor_msgs::PointCloud2, geometry_msgs::PoseStamped> PointsPoseSync;
 using namespace libgraphMap;
 class GraphMapFuserNode {
@@ -54,10 +55,11 @@ class GraphMapFuserNode {
 protected:
   // Our NodeHandle
   ros::NodeHandle nh_;
-  graphMapFuser *fuser_;
+  GraphMapFuser *fuser_;
   message_filters::Subscriber<sensor_msgs::PointCloud2> *points2_sub_;
   message_filters::Subscriber<sensor_msgs::LaserScan> *laser_sub_;
   message_filters::Subscriber<nav_msgs::Odometry> *odom_sub_;
+  message_filters::Subscriber<nav_msgs::Odometry> *gt_fuser_sub_;
   ros::Subscriber gt_sub;
 
   // Components for publishing
@@ -84,6 +86,8 @@ protected:
   message_filters::Synchronizer< LaserOdomSync > *sync_lo_;
   message_filters::Synchronizer< LaserPoseSync > *sync_lp_;
 
+
+  message_filters::Synchronizer< PointsGTOdomSync > *sync_GTodom_;
   message_filters::Synchronizer< PointsOdomSync > *sync_po_;
   message_filters::Synchronizer< PointsPoseSync > *sync_pp_;
   ros::ServiceServer save_map_;
@@ -197,26 +201,39 @@ public:
       use_tf_listener_ = true;
     }
 
-    pose_ =  Eigen::Translation<double,3>(pose_init_x,pose_init_y,pose_init_z)*
-        Eigen::AngleAxis<double>(pose_init_r,Eigen::Vector3d::UnitX()) *
-        Eigen::AngleAxis<double>(pose_init_p,Eigen::Vector3d::UnitY()) *
-        Eigen::AngleAxis<double>(pose_init_t,Eigen::Vector3d::UnitZ()) ;
 
     sensorPose_ =  Eigen::Translation<double,3>(sensor_pose_x,sensor_pose_y,sensor_pose_z)*
         Eigen::AngleAxis<double>(sensor_pose_r,Eigen::Vector3d::UnitX()) *
         Eigen::AngleAxis<double>(sensor_pose_p,Eigen::Vector3d::UnitY()) *
         Eigen::AngleAxis<double>(sensor_pose_t,Eigen::Vector3d::UnitZ()) ;
-    fuser_=new graphMapFuser(map_type_name,reg_type_name,pose_,sensorPose_);
-    initPoseSet=true;
+
+   if(!initPoseFromGT){
+    pose_ =  Eigen::Translation<double,3>(pose_init_x,pose_init_y,pose_init_z)*
+        Eigen::AngleAxis<double>(pose_init_r,Eigen::Vector3d::UnitX()) *
+        Eigen::AngleAxis<double>(pose_init_p,Eigen::Vector3d::UnitY()) *
+        Eigen::AngleAxis<double>(pose_init_t,Eigen::Vector3d::UnitZ()) ;
+        initPoseSet=true;
+        fuser_=new GraphMapFuser(map_type_name,reg_type_name,pose_,sensorPose_);
+   }
+
+
     cout<<"node: initial pose =\n"<<pose_.translation()<<endl;
 
 
     if(!matchLaser) {
-      points2_sub_ = new message_filters::Subscriber<sensor_msgs::PointCloud2>(nh_,points_topic,1);
+      points2_sub_ = new message_filters::Subscriber<sensor_msgs::PointCloud2>(nh_,points_topic,2);
       if(useOdometry) {
-        odom_sub_ = new message_filters::Subscriber<nav_msgs::Odometry>(nh_,odometry_topic,10);
-        sync_po_ = new message_filters::Synchronizer< PointsOdomSync >(PointsOdomSync(SYNC_FRAMES), *points2_sub_, *odom_sub_);
-        sync_po_->registerCallback(boost::bind(&GraphMapFuserNode::points2OdomCallback, this, _1, _2));
+        if(renderGTmap){
+          cout<<"render GT true"<<endl;
+          gt_fuser_sub_ = new message_filters::Subscriber<nav_msgs::Odometry>(nh_,gt_topic,10);
+          sync_GTodom_ = new message_filters::Synchronizer< PointsGTOdomSync >(PointsGTOdomSync(SYNC_FRAMES), *points2_sub_, *gt_fuser_sub_);
+          sync_GTodom_->registerCallback(boost::bind(&GraphMapFuserNode::GTLaserPointsOdomCallback, this, _1, _2));
+        }
+        else{
+          odom_sub_ = new message_filters::Subscriber<nav_msgs::Odometry>(nh_,odometry_topic,10);
+          sync_po_ = new message_filters::Synchronizer< PointsOdomSync >(PointsOdomSync(SYNC_FRAMES), *points2_sub_, *odom_sub_);
+          sync_po_->registerCallback(boost::bind(&GraphMapFuserNode::points2OdomCallback, this,_1, _2));
+        }
       }
     }
     else
@@ -231,31 +248,34 @@ public:
         ((void)0); //Do nothing, seriously consider using a laser only callback (no odometry sync)
       }
     }
-
-    if(plotGTTrack) {
-      gt_sub = nh_.subscribe<nav_msgs::Odometry>(gt_topic,10,&GraphMapFuserNode::gt_callback, this);
+      if(plotGTTrack) {
+       gt_sub = nh_.subscribe<nav_msgs::Odometry>(gt_topic,10,&GraphMapFuserNode::gt_callback, this);
     }
-
+    cout<<"init done"<<endl;
   }
 
   void processFrame(pcl::PointCloud<pcl::PointXYZ> &cloud,
                     Eigen::Affine3d Tmotion) {
+    if(!initPoseSet)
+      return;
+
     if(frame_nr_==0)
       time_last_itr=ros::Time::now();
     else{
       time_now=ros::Time::now();
-      cout<<"iteration time= "<<time_now-time_last_itr<<endl;
+    //  cout<<"iteration time= "<<time_now-time_last_itr<<endl;
       time_last_itr=time_now;
     }
     frame_nr_++;
-    //fuser_->processFrame();
-    //sanity check for odometry
-    if((Tmotion.translation().norm() <0.01 && Tmotion.rotation().eulerAngles(0,1,2)(2)< 0.01) && useOdometry) {
+
+
+    if((Tmotion.translation().norm() <0.01 && Tmotion.rotation().eulerAngles(0,1,2)(2)< 0.01) && useOdometry) {    //sanity check for odometry
       std::cerr<<"No motion, skipping Frame\n";
       return;
     }
-    (void)ResetInvalidMotion(Tmotion); 
-    fuser_->ProcessFrame(cloud,pose_,Tmotion);
+    (void)ResetInvalidMotion(Tmotion);
+    pose_=pose_*Tmotion;//prediction from movement
+    fuser_->ProcessFrame(cloud,pose_);
 
     tf::Transform Transform;
     tf::transformEigenToTF(pose_,Transform);
@@ -298,8 +318,7 @@ public:
   // Callback
   void laserCallback(const sensor_msgs::LaserScan::ConstPtr& msg_in)
   {
-    // Add to a queue
-
+    cout<<"laser callback"<<endl;
     sensor_msgs::PointCloud2 cloud;
     pcl::PointCloud<pcl::PointXYZ> pcl_cloud_unfiltered, pcl_cloud;
     projector_.projectLaser(*msg_in, cloud);
@@ -325,12 +344,10 @@ public:
   void laserOdomCallback(const sensor_msgs::LaserScan::ConstPtr& msg_in,
                          const nav_msgs::Odometry::ConstPtr& odo_in)
   {
-    Eigen::Quaterniond qd;
+    cout<<"laser odom callback"<<endl;
     sensor_msgs::PointCloud2 cloud;
     pcl::PointCloud<pcl::PointXYZ> pcl_cloud, pcl_cloud_unfiltered;
     Eigen::Affine3d Tm;
-
-
 
     tf::poseMsgToEigen(odo_in->pose.pose,this_odom);
     if (frame_nr_  == 0){
@@ -340,10 +357,6 @@ public:
       Tm = last_odom.inverse()*this_odom;
 
     last_odom = this_odom;
-
-    cout<<"node: laser and odom callback, frame nr: "<<frame_nr_<<endl;
-
-    //plot laser in world based assuming the scan came from fuser laser link
     projector_.projectLaser(*msg_in, cloud);
     pcl::fromROSMsg (cloud, pcl_cloud_unfiltered);
     sensor_msgs::LaserScan msg_out=*msg_in;
@@ -363,20 +376,14 @@ public:
         pcl_cloud.points.push_back(pt);
       }
     }
-    //ROS_INFO("Got laser and odometry!");
-
     this->processFrame(pcl_cloud,Tm);
-
     cout<< "publish fuser data"<<endl;
-
-    //publish_map();
-
   }
   void points2OdomCallback(const sensor_msgs::PointCloud2::ConstPtr& msg_in,
                            const nav_msgs::Odometry::ConstPtr& odo_in)
   {
-
-    Eigen::Quaterniond qd;
+    ros::Time tstart=ros::Time::now();
+   // cout<<"Point odom callback"<<endl;
     Eigen::Affine3d Tm;
     pcl::PointCloud<pcl::PointXYZ> cloud;
     tf::poseMsgToEigen(odo_in->pose.pose,this_odom);
@@ -390,18 +397,31 @@ public:
 
     pcl::fromROSMsg (*msg_in, cloud);
     this->processFrame(cloud,Tm);
+      ros::Time tend=ros::Time::now();
+      cout<<"Total execution time= "<<tend-tstart<<endl;
+  }
+  void GTLaserPointsOdomCallback(const sensor_msgs::PointCloud2::ConstPtr& msg_in,
+                                 const nav_msgs::Odometry::ConstPtr& odo_in)
+  {
+    //cout<<"GT point callback"<<endl;
+    Eigen::Affine3d GT_pose;
+    pcl::PointCloud<pcl::PointXYZ> cloud;
+    tf::poseMsgToEigen(odo_in->pose.pose,pose_);
+    pcl::fromROSMsg (*msg_in, cloud);
+    fuser_->ProcessFrame(cloud,pose_);
   }
   // Callback
   void gt_callback(const nav_msgs::Odometry::ConstPtr& msg_in)
   {
-    Eigen::Quaterniond qd;
+  //  cout<<"GT odom callback"<<endl;
     Eigen::Affine3d gt_pose;
     tf::poseMsgToEigen(msg_in->pose.pose,gt_pose);
 
     if(initPoseFromGT && !initPoseSet) {
-      initPoseSet = true;
       pose_ = gt_pose;
       ROS_INFO("Set initial pose from GT track");
+      fuser_=new GraphMapFuser(map_type_name,reg_type_name,pose_,sensorPose_);
+      initPoseSet = true;
     }
   }
 

@@ -14,23 +14,23 @@
 #include <ndt_registration/ndt_matcher_d2d_2d.h>
 #include <ndt_registration/ndt_matcher_d2d.h>
 #include <ndt_registration/ndt_matcher_d2d_sc.h>
-#include "ndt2d/ndt2d_map_type.h"
+#include "ndt/ndt_map_type.h"
 #include "visualization/graph_plot.h"
 
 #define ndt_d2d_reg_type_name "ndt_d2d_reg"
 namespace libgraphMap{
 using namespace lslgeneric;
-class ndtd2dRegType:public registrationType{
+class NDTD2DRegType:public registrationType{
 public:
-  ~ndtd2dRegType();
-  bool Register(mapTypePtr maptype, Eigen::Affine3d &Tnow, const Eigen::Affine3d &Tmotion, pcl::PointCloud<pcl::PointXYZ> &cloud);//This methods attempts to register the point cloud versus the map using Tmotion as a first guess
+  ~NDTD2DRegType();
+  bool Register(MapTypePtr maptype, Eigen::Affine3d &Tnow, pcl::PointCloud<pcl::PointXYZ> &cloud);//This methods attempts to register the point cloud versus the map using Tmotion as a first guess
 protected:
-  ndtd2dRegType(const Eigen::Affine3d &sensor_pose, regParamPtr paramptr);
+  NDTD2DRegType(const Eigen::Affine3d &sensor_pose, RegParamPtr paramptr);
   double resolution_,resolutionLocalFactor_;
   NDTMatcherD2D_2D matcher2D_;
   NDTMatcherD2D matcher3D_;
 private:
-  friend class graphfactory;
+  friend class GraphFactory;
 };
 
 
@@ -47,7 +47,7 @@ public:
 protected:
   ndtd2dRegParam();
 private:
-  friend class graphfactory;
+  friend class GraphFactory;
 
 };
 }

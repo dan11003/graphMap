@@ -23,9 +23,9 @@ namespace libgraphMap{
  * ... Abstract class to present parameters for "mapType". this class contain generic parameters forr all map types.  ...
  */
 
-class mapParam{
+class MapParam{
 public:
-  virtual ~mapParam()=0;
+  virtual ~MapParam()=0;
   string getMapName() const{return mapName_;}
   virtual string ToString();
   double radius_;
@@ -37,7 +37,7 @@ public:
   bool enable_mapping_;
 protected:
   virtual void GetParametersFromRos();
-  mapParam();
+  MapParam();
   string mapName_;
   /*-----Boost serialization------*/
   friend class boost::serialization::access;
@@ -53,7 +53,7 @@ protected:
  * ... Abstract class to implement local maps.  ...
  */
 
-class mapType{
+class MapType{
 
 public:
   /*!
@@ -63,9 +63,9 @@ public:
    */
   virtual bool Initialized() const{return initialized_;}
   virtual void update(const Eigen::Affine3d &Tnow,pcl::PointCloud<pcl::PointXYZ> &cloud)=0;
-  virtual bool CompoundMapsByRadius(mapTypePtr target,const Affine3d &T_source,const Affine3d &T_target, double radius=5);
+  virtual bool CompoundMapsByRadius(MapTypePtr target,const Affine3d &T_source,const Affine3d &T_target, double radius=5);
 protected:
-  mapType(mapParamPtr param);
+  MapType(MapParamPtr param);
   double radius_;
   double sizex_;
   double sizey_;

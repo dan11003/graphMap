@@ -11,7 +11,7 @@
 #include<Eigen/StdVector>
 #include "visualization/graph_plot.h"
 #include "ndt_map/ndt_map.h"
-#include "ndt2d/ndt2d_map_type.h"
+#include "ndt/ndt_map_type.h"
 #include "ros/ros.h"
 #include "ros/node_handle.h"
 
@@ -31,27 +31,27 @@ public:
    * \param T_world_to_local pre: Not used: Post T_world_to_local contain the mapping from world to the current local mapNode frame.
    */
   bool AutomaticMapInterchange(Affine3d &Tnow, const Matrix6d &cov, Affine3d & T_world_to_local_map);
-  virtual void AddMapNode(const mapParamPtr &mapparam,const Eigen::Affine3d &diff,const Matrix6d &cov);//
-  mapNodePtr GetCurrentNode();
-  mapNodePtr GetPreviousNode();
+  virtual void AddMapNode(const MapParamPtr &mapparam,const Eigen::Affine3d &diff,const Matrix6d &cov);//
+  MapNodePtr GetCurrentNode();
+  MapNodePtr GetPreviousNode();
   uint32_t MapSize(){return nodes_.size();}
   virtual string ToString();
   virtual Affine3d GetNodePose(int nodeNr);
   virtual Eigen::Affine3d GetCurrentNodePose();
   virtual Eigen::Affine3d GetPreviousNodePose();
 protected:
-  GraphMap(const Eigen::Affine3d &nodepose, const mapParamPtr &mapparam, const GraphParamPtr graphparam);
+  GraphMap(const Eigen::Affine3d &nodepose, const MapParamPtr &mapparam, const GraphParamPtr graphparam);
   bool SwitchToClosestMapNode(Affine3d &Tnow, const Matrix6d &cov, Affine3d & T_world_to_local_map,const double radius);
-  mapNodePtr currentNode_,prevNode_;//The current node
+  MapNodePtr currentNode_,prevNode_;//The current node
   std::vector<NodePtr> nodes_;//Vector of all nodes in graph
-  std::vector<factorPtr> factors_;
-  mapParamPtr mapparam_;
+  std::vector<FactorPtr> factors_;
+  MapParamPtr mapparam_;
 
   bool use_submap_;
   double interchange_radius_;
   double compound_radius_;
 private:
-  friend class graphfactory;
+  friend class GraphFactory;
 };
 
 class GraphParam{
@@ -63,7 +63,7 @@ protected:
   GraphParam();
   void GetParametersFromRos();
 private:
-  friend class graphfactory;
+  friend class GraphFactory;
 };
 }
 #endif // GRAPH_H

@@ -3,9 +3,9 @@
 using namespace std;
 namespace libgraphMap{
 
-GraphMap::GraphMap(const Affine3d &nodepose,const mapParamPtr &mapparam,const GraphParamPtr graphparam){
+GraphMap::GraphMap(const Affine3d &nodepose,const MapParamPtr &mapparam,const GraphParamPtr graphparam){
   prevNode_=NULL;
-  currentNode_=graphfactory::CreateMapNode(nodepose,mapparam);//The first node to be added
+  currentNode_=GraphFactory::CreateMapNode(nodepose,mapparam);//The first node to be added
   nodes_.push_back(currentNode_);
   mapparam_=mapparam;
   use_submap_=graphparam->use_submap_;
@@ -19,18 +19,18 @@ GraphMap::GraphMap(const Affine3d &nodepose,const mapParamPtr &mapparam,const Gr
   //interchange_radius_=min_size/2-mapparam_->max_range_;//
 
 }
-mapNodePtr GraphMap::GetCurrentNode(){
+MapNodePtr GraphMap::GetCurrentNode(){
   return currentNode_;
 }
-mapNodePtr GraphMap::GetPreviousNode(){
+MapNodePtr GraphMap::GetPreviousNode(){
   return prevNode_;
 }
-void GraphMap::AddMapNode(const mapParamPtr &mapparam, const Affine3d &diff, const Matrix6d &cov){ //Add node with link uncertainty
+void GraphMap::AddMapNode(const MapParamPtr &mapparam, const Affine3d &diff, const Matrix6d &cov){ //Add node with link uncertainty
 
   Affine3d newNodePose=Affine3d::Identity();
   newNodePose= currentNode_->GetPose()*diff;
-  mapNodePtr newNode=graphfactory::CreateMapNode(newNodePose,mapparam);
-  factorPtr sd=graphfactory::CreateMapNodeFactor(currentNode_,newNode,diff,cov);
+  MapNodePtr newNode=GraphFactory::CreateMapNode(newNodePose,mapparam);
+  FactorPtr sd=GraphFactory::CreateMapNodeFactor(currentNode_,newNode,diff,cov);
   factors_.push_back(sd);//Add connection between current and new node with link diff and covariance
   nodes_.push_back(newNode);
   currentNode_=newNode;
@@ -55,12 +55,12 @@ Affine3d GraphMap::GetPreviousNodePose(){
 }
 bool GraphMap::SwitchToClosestMapNode(Affine3d &Tnow, const Matrix6d &cov, Affine3d & T_world_to_local_map,const double radius){
   bool node_found=false;
-  mapNodePtr closest_map_node=NULL;
+  MapNodePtr closest_map_node=NULL;
   double closest_distance=-1.0;
   cout<<"currently at pose="<<Tnow.translation()<<endl;
   for(std::vector<NodePtr>::iterator itr_node = nodes_.begin(); itr_node != nodes_.end(); ++itr_node) { //loop thorugh all existing nodes
     if( (*itr_node)->WithinRadius(Tnow,radius) ){ //if a node is within radius of pose and the node is of type "map type"
-      if(  mapNodePtr found_map_node_ptr = boost::dynamic_pointer_cast< MapNode >(*itr_node) ){ //A map node has now been found within radius)
+      if(  MapNodePtr found_map_node_ptr = boost::dynamic_pointer_cast< MapNode >(*itr_node) ){ //A map node has now been found within radius)
         double found_distance= Eigen::Vector3d(Tnow.translation()-(*itr_node)->GetPose().translation()).norm();//Euclidian distance between robot pose and map node pose;
         cout<<"Node is within range of previously created map, distance="<<found_distance<<endl;
         if(closest_distance==-1.0|| found_distance<closest_distance){
@@ -88,7 +88,6 @@ bool GraphMap::AutomaticMapInterchange(Affine3d &Tnow, const Matrix6d &cov, Affi
 
   Tnow=T_world_to_local_map.inverse()*Tnow;//map Tnow to world frame
   if(! currentNode_->WithinRadius(Tnow,interchange_radius_)){ //No longer within radius of node
-    mapChanged=true;
     cout<<"Left boundries of previous map, will  search through "<<nodes_.size()<<" node(s) to find a map node within range of"<<interchange_radius_<<"m"<<endl;
     if( SwitchToClosestMapNode(Tnow,cov,T_world_to_local_map,interchange_radius_)){
       cout<<"switched to node="<<currentNode_->GetPose().translation()<<endl;
@@ -96,11 +95,12 @@ bool GraphMap::AutomaticMapInterchange(Affine3d &Tnow, const Matrix6d &cov, Affi
     else{
       cout<<"No node was found, will create a new map pose."<<endl;
       prevNode_=currentNode_;
-      NDT2DMapPtr prev_ndt_map = boost::dynamic_pointer_cast< NDT2DMapType >(prevNode_->GetMap());
+      NDT2DMapPtr prev_ndt_map = boost::dynamic_pointer_cast< NDTMapType >(prevNode_->GetMap());
       AddMapNode(mapparam_,T_world_to_local_map*Tnow,cov); //if no node already exists, create a new node
       //Tdiff.translation()=T_target.translation()-T_source.translation();
       //pcl::PointXYZ center_pcl(Tdiff.translation()(0),Tdiff.translation()(1),Tdiff.translation()(2));
       prevNode_->GetMap()->CompoundMapsByRadius(currentNode_->GetMap(),prevNode_->GetPose(),currentNode_->GetPose(),compound_radius_);
+      mapChanged=true;
     }
   }
   T_world_to_local_map=currentNode_->GetPose().inverse();

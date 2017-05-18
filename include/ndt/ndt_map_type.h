@@ -2,7 +2,7 @@
 #define NDT2DMAP_TYPE_H
 #include "graphfactory.h"
 #include <graph_map/map_type.h>
-#include <ndt2d/ndt2d_map_param.h>
+#include <ndt/ndt_map_param.h>
 #include <ndt_map/ndt_map_hmt.h>
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
@@ -17,21 +17,21 @@
 namespace libgraphMap{
 using namespace lslgeneric;
 
-class NDT2DMapType:public mapType{
+class NDTMapType:public MapType{
 public:
-  ~NDT2DMapType();
+  ~NDTMapType();
   virtual void update(const Eigen::Affine3d &Tsensor, pcl::PointCloud<pcl::PointXYZ> &cloud);
   virtual NDTMap* GetMap() { return map_;}
   //Advanced
-  virtual bool CompoundMapsByRadius(mapTypePtr target,const Affine3d &T_source,const Affine3d &T_target, double radius);
-  NDT2DMapType(mapParamPtr paramptr);
+  virtual bool CompoundMapsByRadius(MapTypePtr target,const Affine3d &T_source,const Affine3d &T_target, double radius);
+  NDTMapType(MapParamPtr paramptr);
   NDTMap *map_;
 
 private:
   double resolution_,resolution_local_factor=1.;
   double sensor_range_;
   bool enable_mapping_=true;
-  friend class graphfactory;
+  friend class GraphFactory;
   void InitializeMap(const Eigen::Affine3d &Td,pcl::PointCloud<pcl::PointXYZ> &cloud);
 
   /*-----Boost serialization------*/

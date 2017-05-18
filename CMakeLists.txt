@@ -45,9 +45,9 @@ set (${PROJECT_NAME}_LIB_SRCS
     src/graph_map/map_type.cpp
     src/graph_map_fuser.cpp
     src/graph_map/reg_type.cpp
-    src/ndt2d/ndt2d_map_type.cpp
-    src/ndt2d/ndtd2d_reg_type.cpp
-    src/ndt2d/ndt2d_map_param.cpp
+    src/ndt/ndt_map_type.cpp
+    src/ndt/ndtd2d_reg_type.cpp
+    src/ndt/ndt_map_param.cpp
     src/graphfactory.cpp
     src/visualization/graph_plot.cpp
     src/lidarUtils/lidar_utilities.cpp

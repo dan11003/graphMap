@@ -1,9 +1,8 @@
-
-#include "ndt2d/ndtd2d_reg_type.h"
+#include "ndt/ndtd2d_reg_type.h"
 namespace libgraphMap{
 
 
-ndtd2dRegType::ndtd2dRegType(const Affine3d &sensor_pose, regParamPtr paramptr):registrationType(sensor_pose,paramptr){
+NDTD2DRegType::NDTD2DRegType(const Affine3d &sensor_pose, RegParamPtr paramptr):registrationType(sensor_pose,paramptr){
 
   ndtd2dregParamPtr param_ptr = boost::dynamic_pointer_cast< ndtd2dRegParam >(paramptr);//Should not be NULL
   if(param_ptr!=NULL){
@@ -19,29 +18,25 @@ ndtd2dRegType::ndtd2dRegType(const Affine3d &sensor_pose, regParamPtr paramptr):
     cerr<<"ndtd2d registrator has NULL parameters"<<endl;
 }
 
-ndtd2dRegType::~ndtd2dRegType(){}
+NDTD2DRegType::~NDTD2DRegType(){}
 
-bool ndtd2dRegType::Register(mapTypePtr maptype,Eigen::Affine3d &Tnow, const Eigen::Affine3d &Tmotion,pcl::PointCloud<pcl::PointXYZ> &cloud) {
+bool NDTD2DRegType::Register(MapTypePtr maptype,Eigen::Affine3d &Tnow,pcl::PointCloud<pcl::PointXYZ> &cloud) {
 
+  if(!enableRegistration_||!maptype->Initialized()){
+    cout<<"Registration disabled - motion based on odometry"<<endl;
+    return true;
+  }
   ///Create local map
   lslgeneric::NDTMap ndlocal(new lslgeneric::LazyGrid(resolution_*resolutionLocalFactor_));
   ndlocal.guessSize(0,0,0,sensorRange_,sensorRange_,mapSizeZ_);
   ndlocal.loadPointCloud(cloud,sensorRange_);
   ndlocal.computeNDTCells(CELL_UPDATE_MODE_SAMPLE_VARIANCE);
-  Eigen::Affine3d Tinit = Tnow * Tmotion;//registration prediction
-
+  Eigen::Affine3d Tinit = Tnow;//registration prediction
   //NDTMap * ptrmap=&ndlocal;
   //graphPlot::SendLocalMapToRviz(ptrmap,0,sensorPose_);
 
-  if(!enableRegistration_||!maptype->Initialized()){
-    cout<<"Registration disabled - motion based on odometry"<<endl;
-    Tnow=Tinit;
-    return true;
-  }
-
-
   //Get ndt map pointer
-  NDT2DMapPtr MapPtr = boost::dynamic_pointer_cast< NDT2DMapType >(maptype);
+  NDT2DMapPtr MapPtr = boost::dynamic_pointer_cast< NDTMapType >(maptype);
   NDTMap *globalMap=MapPtr->GetMap();
   // cout<<"number of cell in (global/local) map"<<globalMap->getAllCells().size()<<","<<ndlocal.getAllCells().size()<<endl;
   bool matchSuccesfull;
@@ -53,7 +48,7 @@ bool ndtd2dRegType::Register(mapTypePtr maptype,Eigen::Affine3d &Tnow, const Eig
   }
 
   if(matchSuccesfull){
-    Eigen::Affine3d diff = (Tnow * Tmotion).inverse()*Tinit;//difference between prediction and registration
+    Eigen::Affine3d diff = Tnow.inverse()*Tinit;//difference between prediction and registration
     Vector3d diff_angles=Vector3d(diff.rotation().eulerAngles(0,1,2));
     Eigen::AngleAxisd diff_rotation_(diff.rotation());
 
@@ -61,22 +56,22 @@ bool ndtd2dRegType::Register(mapTypePtr maptype,Eigen::Affine3d &Tnow, const Eig
     if(checkConsistency_ && diff.translation().norm() > maxTranslationNorm_ ){
       cerr<<"registration failure: Translation too high"<<endl;
       cerr<<"movement="<<diff.translation().norm()<<"m  >  "<<diff.translation().norm()<<endl;
-      Tnow = Tnow * Tmotion;
       return false;
     }
-    if(checkConsistency_ &&(diff_rotation_.angle() > maxRotationNorm_) ){
+    else if(checkConsistency_ &&(diff_rotation_.angle() > maxRotationNorm_) ){
       cerr<<"registration failure: Rotation too high"<<endl;
       cerr<<"movement="<<diff_rotation_.angle()<<"rad  >  "<<maxRotationNorm_<<endl;
       //Tnow = Tnow * Tmotion;
-      //return false;
+      return false;
     }
-    Tnow = Tinit;
+    else{
+    Tnow = Tinit;//return registered value
     return true;
+    }
   }
   else{
-    Tnow = Tnow * Tmotion;
-  return false;
   cerr<<"Registration unsuccesfull"<<endl;
+  return false;
   }
 }
 

@@ -1,22 +1,22 @@
 #include "graphfactory.h"
 #include "graph_map/factor.h"
 #include "graph_map/map_type.h"
-#include "ndt2d/ndt2d_map_param.h"
-#include "ndt2d/ndt2d_map_type.h"
+#include "ndt/ndt_map_param.h"
+#include "ndt/ndt_map_type.h"
 #include "graph_map/map_node.h"
 #include "graph_map/graph_map.h"
 #include "graph_map/reg_type.h"
-#include "ndt2d/ndtd2d_reg_type.h"
+#include "ndt/ndtd2d_reg_type.h"
 #include "Eigen/Geometry"
 #include "template/template_map_type.h"
 #include "template/template_reg_type.h"
 namespace libgraphMap{
 
 
-mapParamPtr graphfactory::CreateMapParam(string mapname){
+MapParamPtr GraphFactory::CreateMapParam(string mapname){
   if(mapname.compare(ndt_map_type_name)==0){
     cout<<"Graphfactory: Created parameters for map type: \""<<ndt_map_type_name<<"\""<<endl;
-    NDT2DMapParamPtr paramPtr(new NDT2DMapParam());
+    NDT2DMapParamPtr paramPtr(new NDTMapParam());
     return paramPtr;
   }
   else if(mapname.compare("template")==0){
@@ -29,10 +29,10 @@ mapParamPtr graphfactory::CreateMapParam(string mapname){
   }
 }
 
-mapTypePtr graphfactory::CreateMap(mapParamPtr mapparam){
-  if(  NDT2DMapParamPtr ndt2MapParam = boost::dynamic_pointer_cast< NDT2DMapParam >(mapparam) ){ //perform typecast and check if not null conversion
+MapTypePtr GraphFactory::CreateMap(MapParamPtr mapparam){
+  if(  NDT2DMapParamPtr ndt2MapParam = boost::dynamic_pointer_cast< NDTMapParam >(mapparam) ){ //perform typecast and check if not null conversion
     cout<<"Graphfactory: Created map of type: \""<<ndt_map_type_name<<"\""<<endl;
-    return  mapTypePtr(new NDT2DMapType(ndt2MapParam));
+    return  MapTypePtr(new NDTMapType(ndt2MapParam));
   }
   else if(mapparam->getMapName().compare("template")==0){
     cerr<<"Graphfactory: no map exists for \"template\""<<endl;
@@ -45,7 +45,7 @@ mapTypePtr graphfactory::CreateMap(mapParamPtr mapparam){
 
 }
 
-GraphMapPtr graphfactory::CreateGraph(const Eigen::Affine3d &nodepose, mapParamPtr &mapparam, GraphParamPtr graphparam){
+GraphMapPtr GraphFactory::CreateGraph(const Eigen::Affine3d &nodepose, MapParamPtr &mapparam, GraphParamPtr graphparam){
 
   if(mapparam!=NULL){
     cout<<"Graphfactory: Creating graph"<<endl;
@@ -57,30 +57,30 @@ GraphMapPtr graphfactory::CreateGraph(const Eigen::Affine3d &nodepose, mapParamP
     return NULL;
   }
 }
-GraphParamPtr graphfactory::CreateGraphParam(){
+GraphParamPtr GraphFactory::CreateGraphParam(){
     cout<<"Graphfactory: Creating graph parameters"<<endl;
    return boost::shared_ptr<GraphParam>(new GraphParam());
 }
 
-mapNodePtr graphfactory::CreateMapNode(const Eigen::Affine3d &pose,const mapParamPtr &mapparam){//Create a node
+MapNodePtr GraphFactory::CreateMapNode(const Eigen::Affine3d &pose,const MapParamPtr &mapparam){//Create a node
   cout<<"Graphfactory: Creating map node"<<endl;
   return boost::shared_ptr<MapNode>(new MapNode(pose,mapparam));
 }
 
 
-regTypePtr graphfactory::CreateRegistrationType(const Affine3d &sensor_pose,regParamPtr regparam){
-  if(  regParamPtr ndt_d2d_reg_param_ptr = boost::dynamic_pointer_cast< ndtd2dRegParam >(regparam) ){ //perform typecast and check if not null conversion
+RegTypePtr GraphFactory::CreateRegistrationType(const Affine3d &sensor_pose,RegParamPtr regparam){
+  if(  RegParamPtr ndt_d2d_reg_param_ptr = boost::dynamic_pointer_cast< ndtd2dRegParam >(regparam) ){ //perform typecast and check if not null conversion
     cout<<"Graphfactory: created ndtd2d registration type from parameter"<<endl;
-    return regTypePtr(new ndtd2dRegType(sensor_pose,ndt_d2d_reg_param_ptr));
+    return RegTypePtr(new NDTD2DRegType(sensor_pose,ndt_d2d_reg_param_ptr));
   }
   else
     cerr<<"Failed to create object of registration type"<<endl;
   return NULL;
 }
-regParamPtr graphfactory::CreateRegParam(string regType){
+RegParamPtr GraphFactory::CreateRegParam(string regType){
   if(regType.compare(ndt_d2d_reg_type_name)==0){
     cout<<"Graphfactory: Creating parameters for registration type: \""<<ndt_d2d_reg_type_name<<"\""<<endl;
-    return regParamPtr(new ndtd2dRegParam());
+    return RegParamPtr(new ndtd2dRegParam());
   }
   else{
     cerr<<"No registration type with name: \""<<regType<<"\""<<endl;
@@ -88,8 +88,8 @@ regParamPtr graphfactory::CreateRegParam(string regType){
   }
 }
 
-factorPtr graphfactory::CreateMapNodeFactor(mapNodePtr prevMapPose, mapNodePtr nextMapPose, const Eigen::Affine3d &diff, const Matrix6d &covar){
-  factorPtr factorptr=boost::shared_ptr<factor>(new factor(prevMapPose,nextMapPose,diff));
+FactorPtr GraphFactory::CreateMapNodeFactor(MapNodePtr prevMapPose, MapNodePtr nextMapPose, const Eigen::Affine3d &diff, const Matrix6d &covar){
+  FactorPtr factorptr=boost::shared_ptr<factor>(new factor(prevMapPose,nextMapPose,diff));
   return factorptr;
 }
 

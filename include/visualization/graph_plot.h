@@ -19,9 +19,8 @@ using namespace std;
 using Eigen::Affine3d;
 typedef std::vector<Eigen::Matrix3d,Eigen::aligned_allocator<Eigen::Matrix3d> > cov_vector;
 typedef std::vector<Eigen::Vector3d,Eigen::aligned_allocator<Eigen::Vector3d> > mean_vector;
-class graphPlot
-{
-  graphPlot();
+class GraphPlot{
+
 public:
   static void sendMapToRviz(mean_vector &mean, cov_vector &cov, ros::Publisher *mapPublisher, string frame, int color, const Affine3d &offset=Affine3d::Identity(), string ns="ndt", int markerType=visualization_msgs::Marker::SPHERE);
   static void SendLocalMapToRviz(lslgeneric::NDTMap *mapPtr, int color,const Affine3d &offset=Affine3d::Identity());
@@ -43,6 +42,8 @@ protected:
   static ros::Publisher *localMapPublisher_;
   static ros::Publisher *globalMapPublisher_,*global2MapPublisher_;
   static ros::Publisher *graphPosePublisher_, *graphInfoPublisher_;
+private:
+  GraphPlot();
 };
 
 }

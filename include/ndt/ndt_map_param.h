@@ -13,9 +13,9 @@ namespace libgraphMap{
  * ... Parameter class for mapType. Class is by choice of design fully public.  ...
  */
 
-class NDT2DMapParam : public mapParam{
+class NDTMapParam : public MapParam{
 public:
-  ~NDT2DMapParam(){}
+  ~NDTMapParam(){}
   /*void SetParam(double resolution,
                          float cenx,
                           float ceny,
@@ -33,10 +33,10 @@ public:
   std::string directory_;
   bool saveOnDelete_, match2D_,beHMT,matchLaser;
 protected:
-  NDT2DMapParam();
+  NDTMapParam();
 
 private:
-  friend class graphfactory;
+  friend class GraphFactory;
   /*-----Boost serialization------*/
   friend class boost::serialization::access;
   template<class Archive>

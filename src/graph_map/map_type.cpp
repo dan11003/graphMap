@@ -2,12 +2,12 @@
 namespace libgraphMap{
 
 
-mapParam::~mapParam(){}
+MapParam::~MapParam(){}
 
-mapParam::mapParam(){
+MapParam::MapParam(){
   GetParametersFromRos();
 }
-void mapParam::GetParametersFromRos(){
+void MapParam::GetParametersFromRos(){
   ros::NodeHandle nh("~");//base class parameters
   nh.param("sensor_range",max_range_,30.);
   nh.param("min_laser_range",min_range_,0.5);
@@ -18,7 +18,7 @@ void mapParam::GetParametersFromRos(){
   cout<<"read mapType parameters from ros"<<endl;
   cout<<ToString()<<endl;
 }
-string mapParam::ToString(){
+string MapParam::ToString(){
   stringstream ss;
   ss<<"Base map parameters:"<<endl;
   ss<<"Range(max/min)=("<<max_range_<<"/"<<min_range_<<endl;
@@ -28,7 +28,7 @@ string mapParam::ToString(){
 
 
 
-mapType::mapType(mapParamPtr param){
+MapType::MapType(MapParamPtr param){
   initialized_=false;
   sizex_= param->sizex_;
   sizey_= param->sizey_;
@@ -37,7 +37,7 @@ mapType::mapType(mapParamPtr param){
   min_range_=param->min_range_;
 }
 
-bool mapType::CompoundMapsByRadius(mapTypePtr target,const Affine3d &T_source,const Affine3d &T_target, double radius){
+bool MapType::CompoundMapsByRadius(MapTypePtr target,const Affine3d &T_source,const Affine3d &T_target, double radius){
   cout<<"Compunding map not possible in base class"<<endl;
   return false;
 }

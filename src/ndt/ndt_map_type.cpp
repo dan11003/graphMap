@@ -1,11 +1,11 @@
-#include "ndt2d/ndt2d_map_type.h"
+#include "ndt/ndt_map_type.h"
 namespace libgraphMap{
 using namespace std;
 
 using namespace lslgeneric;
 
-NDT2DMapType::NDT2DMapType( mapParamPtr paramptr) : mapType(paramptr){
-  NDT2DMapParamPtr param = boost::dynamic_pointer_cast< NDT2DMapParam >(paramptr);//Should not be NULL
+NDTMapType::NDTMapType( MapParamPtr paramptr) : MapType(paramptr){
+  NDT2DMapParamPtr param = boost::dynamic_pointer_cast< NDTMapParam >(paramptr);//Should not be NULL
   if(param!=NULL){
     resolution_=param ->resolution_;
     enable_mapping_=param->enable_mapping_;
@@ -16,31 +16,30 @@ NDT2DMapType::NDT2DMapType( mapParamPtr paramptr) : mapType(paramptr){
   else
     cerr<<"Cannot create instance of NDTmapHMT"<<std::endl;
 }
-NDT2DMapType::~NDT2DMapType(){}
+NDTMapType::~NDTMapType(){}
 
-void NDT2DMapType::update(const Eigen::Affine3d &Tsensor,pcl::PointCloud<pcl::PointXYZ> &cloud){//update map, cloud is the scan, Tsensor is the pose where the scan was aquired.
+void NDTMapType::update(const Eigen::Affine3d &Tsensor,pcl::PointCloud<pcl::PointXYZ> &cloud){//update map, cloud is the scan, Tsensor is the pose where the scan was aquired.
 
   if(initialized_ && enable_mapping_){
     Eigen::Vector3d localMapSize(max_range_,max_range_,sizez_);
     map_->addPointCloudMeanUpdate(Tsensor.translation(),cloud,localMapSize, 1e5, 25, 2*sizez_, 0.06);
-    cout<<"update map"<<endl;
   }
   else if(!initialized_){
     InitializeMap(Tsensor,cloud);
     initialized_ = true;
   }
 }
-void NDT2DMapType::InitializeMap(const Eigen::Affine3d &Tsensor,pcl::PointCloud<pcl::PointXYZ> &cloud){
+void NDTMapType::InitializeMap(const Eigen::Affine3d &Tsensor,pcl::PointCloud<pcl::PointXYZ> &cloud){
   cout<<"initialize map"<<endl;
   map_->addPointCloud(Tsensor.translation(),cloud, 0.1, 100.0, 0.1);
   map_->computeNDTCells(CELL_UPDATE_MODE_SAMPLE_VARIANCE, 1e5, 255, Tsensor.translation(), 0.1);
 }
-bool NDT2DMapType::CompoundMapsByRadius(mapTypePtr target,const Affine3d &T_source,const Affine3d &T_target, double radius){
+bool NDTMapType::CompoundMapsByRadius(MapTypePtr target,const Affine3d &T_source,const Affine3d &T_target, double radius){
 
   Affine3d Tdiff=Affine3d::Identity();
    Tdiff=T_source.inverse()*T_target;
    pcl::PointXYZ center_pcl(Tdiff.translation()(0),Tdiff.translation()(1),Tdiff.translation()(2));
-  if( NDT2DMapPtr targetPtr=boost::dynamic_pointer_cast<NDT2DMapType>(target) ){
+  if( NDT2DMapPtr targetPtr=boost::dynamic_pointer_cast<NDTMapType>(target) ){
     cout<<"dynamic casted pointer"<<endl;
     if(resolution_!=targetPtr->resolution_)//checking if source and target have same resolution, they shoould have.
       return false;
@@ -56,7 +55,6 @@ bool NDT2DMapType::CompoundMapsByRadius(mapTypePtr target,const Affine3d &T_sour
     cout<<"centerpoint in prev map frame=\n"<<Tdiff.translation()<<endl;
 
     for(int i=0;i<cells.size();i++){
-      cout<<"cell mean prev frame=\n "<< cells[i]->getMean()<<endl;
       Eigen::Matrix3d cov=Tdiff.inverse().linear()*cells[i]->getCov()*Tdiff.linear();
       Eigen::Vector3d mean=Tdiff.inverse()*cells[i]->getMean();
       targetPtr->GetMap()->addDistributionToCell(cov,mean,cells[i]->getN());

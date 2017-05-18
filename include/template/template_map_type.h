@@ -13,16 +13,16 @@
 #define ndt_map_type_name "ndt_2d_map"
 namespace libgraphMap{
 
-class TemplateMapType:public mapType{
+class TemplateMapType:public MapType{
 public:
   //Mandatory
   ~TemplateMapType();
-  TemplateMapType(mapParamPtr paramptr);
+  TemplateMapType(MapParamPtr paramptr);
   virtual void update(const Eigen::Affine3d &Tsensor, pcl::PointCloud<pcl::PointXYZ> &cloud);//Mandatory, base method implemented as pure virtual
   //Optional
-  virtual bool CompoundMapsByRadius(mapTypePtr target,const Affine3d &T_source,const Affine3d &T_target, double radius);//Optional
+  virtual bool CompoundMapsByRadius(MapTypePtr target,const Affine3d &T_source,const Affine3d &T_target, double radius);//Optional
 private:
-  friend class graphfactory;// objects of type <template_map_type> are created by using teh factory design pattern, don't forget to register <template_map_type> for creation in factory
+  friend class GraphFactory;// objects of type <template_map_type> are created by using teh factory design pattern, don't forget to register <template_map_type> for creation in factory
 
   /*-----Boost serialization------*/
   friend class boost::serialization::access;
@@ -33,7 +33,7 @@ private:
   /*-----End of Boost serialization------*/
 };
 
-class TemplateMapParam : public mapParam{
+class TemplateMapParam : public MapParam{
 public:
   ~TemplateMapParam(){}
   void GetParametersFromRos();
@@ -41,7 +41,7 @@ public:
 protected:
   TemplateMapParam();
 private:
-  friend class graphfactory;
+  friend class GraphFactory;
   /*-----Boost serialization------*/
   friend class boost::serialization::access;
   template<class Archive>

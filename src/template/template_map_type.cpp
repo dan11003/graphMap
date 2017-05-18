@@ -3,7 +3,7 @@ namespace libgraphMap{
 using namespace std;
 
 
-TemplateMapType::TemplateMapType( mapParamPtr paramptr) : mapType(paramptr){
+TemplateMapType::TemplateMapType( MapParamPtr paramptr) : MapType(paramptr){
   TemplateMapParamPtr param = boost::dynamic_pointer_cast< TemplateMapParam >(paramptr);//Should not be NULL
   if(param!=NULL){
     //Get parameters to this class from param
@@ -24,7 +24,7 @@ void TemplateMapType::update(const Eigen::Affine3d &Tsensor,pcl::PointCloud<pcl:
   }
 }
 
-bool TemplateMapType::CompoundMapsByRadius(mapTypePtr target,const Affine3d &T_source,const Affine3d &T_target, double radius){
+bool TemplateMapType::CompoundMapsByRadius(MapTypePtr target,const Affine3d &T_source,const Affine3d &T_target, double radius){
 
   if( TemplateMapTypePtr targetPtr=boost::dynamic_pointer_cast<TemplateMapType>(target) ){
 
@@ -49,7 +49,7 @@ void TemplateMapParam::GetParametersFromRos(){
 
 template<class Archive>
 void TemplateMapParam::serialize(Archive & ar, const unsigned int version){
-  ar & boost::serialization::base_object<mapParam>(*this);
+  ar & boost::serialization::base_object<MapParam>(*this);
   //ar & cenx_& ceny_ &cenz_;
 }
 

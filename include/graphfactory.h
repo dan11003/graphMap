@@ -58,43 +58,43 @@ typedef boost::shared_ptr<TemplateRegTypeParam> TemplateRegTypeParamPtr;
 
 
 
-class NDT2DMapType;
-typedef boost::shared_ptr<NDT2DMapType> NDT2DMapPtr;
+class NDTMapType;
+typedef boost::shared_ptr<NDTMapType> NDT2DMapPtr;
 
-class NDT2DMapParam;
-typedef boost::shared_ptr<NDT2DMapParam> NDT2DMapParamPtr;
+class NDTMapParam;
+typedef boost::shared_ptr<NDTMapParam> NDT2DMapParamPtr;
 
 class ndtd2dRegParam;
 typedef boost::shared_ptr<ndtd2dRegParam> ndtd2dregParamPtr;
 
-class ndtd2dRegType;
-typedef boost::shared_ptr<ndtd2dRegType> ndtd2dregTypePtr;
+class NDTD2DRegType;
+typedef boost::shared_ptr<NDTD2DRegType> ndtd2dregTypePtr;
 
 class factor;
-typedef boost::shared_ptr<factor> factorPtr;
+typedef boost::shared_ptr<factor> FactorPtr;
 
 /*!
  *\brief registrationType is an abstract class for registration
  *\brief registrationParameters provides paramerters to the registration
  */
 class registrationType;
-typedef boost::shared_ptr<registrationType> regTypePtr;
+typedef boost::shared_ptr<registrationType> RegTypePtr;
 
 class registrationParameters;
-typedef boost::shared_ptr<registrationParameters> regParamPtr;
+typedef boost::shared_ptr<registrationParameters> RegParamPtr;
 
-class mapType;
-typedef boost::shared_ptr<mapType> mapTypePtr;
+class MapType;
+typedef boost::shared_ptr<MapType> MapTypePtr;
 
-class mapParam;
-typedef boost::shared_ptr<mapParam> mapParamPtr;
+class MapParam;
+typedef boost::shared_ptr<MapParam> MapParamPtr;
 
 
 class Node;
 typedef boost::shared_ptr<Node> NodePtr;
 
 class MapNode;
-typedef boost::shared_ptr<MapNode> mapNodePtr;
+typedef boost::shared_ptr<MapNode> MapNodePtr;
 
 class GraphMap;
 typedef boost::shared_ptr<GraphMap> GraphMapPtr;
@@ -109,22 +109,24 @@ typedef boost::shared_ptr<GraphParam> GraphParamPtr;
 /*!
  * ... Abstract class to implement map parameters.  ...
  */
-class graphfactory{
+class GraphFactory{
 public:
-  static mapParamPtr CreateMapParam(string mapType);
-  static mapTypePtr  CreateMap(mapParamPtr mapparam);
+  static MapParamPtr   CreateMapParam(string MapType);
+  static MapTypePtr    CreateMap(MapParamPtr mapparam);
+
   static GraphParamPtr CreateGraphParam();
-  static GraphMapPtr CreateGraph(const Eigen::Affine3d &nodepose, mapParamPtr &mapparam,GraphParamPtr graphparam);
-  static mapNodePtr  CreateMapNode(const Eigen::Affine3d &pose,const mapParamPtr &mapparam);
+  static GraphMapPtr   CreateGraph(const Eigen::Affine3d &nodepose, MapParamPtr &mapparam,GraphParamPtr graphparam);
+  static MapNodePtr    CreateMapNode(const Eigen::Affine3d &pose,const MapParamPtr &mapparam);
+  static FactorPtr     CreateObservationFactor(MapNodePtr mapPose, NodePtr observationPose,const Eigen::Affine3d &diff,const Matrix6d &covar);
+  static FactorPtr     CreateMapNodeFactor(MapNodePtr prevMapPose, MapNodePtr nextMapPose,const Eigen::Affine3d &diff,const Matrix6d &covar);
 
-  static regTypePtr  CreateRegistrationType(const Eigen::Affine3d &sensor_pose, regParamPtr regparam);
-  static regParamPtr CreateRegParam(string regType);
+  static RegTypePtr    CreateRegistrationType(const Eigen::Affine3d &sensor_pose, RegParamPtr regparam);
+  static RegParamPtr   CreateRegParam(string regType);
 
-  static factorPtr   CreateObservationFactor(mapNodePtr mapPose, NodePtr observationPose,const Eigen::Affine3d &diff,const Matrix6d &covar);
-  static factorPtr   CreateMapNodeFactor(mapNodePtr prevMapPose, mapNodePtr nextMapPose,const Eigen::Affine3d &diff,const Matrix6d &covar);
+
 
 private:
-  graphfactory(){}
+  GraphFactory(){}
 };
 
 

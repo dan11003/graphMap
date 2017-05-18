@@ -12,7 +12,7 @@ class registrationType{
 public:
 
   virtual ~registrationType()=0;
-  virtual bool Register(mapTypePtr maptype,Eigen::Affine3d &Tnow, const Eigen::Affine3d &Tmotion,pcl::PointCloud<pcl::PointXYZ> &cloud){}//This methods attempts to register the point cloud versus the map using the affine transformation guess "Tm"
+  virtual bool Register(MapTypePtr maptype,Eigen::Affine3d &Tnow,pcl::PointCloud<pcl::PointXYZ> &cloud){}//This methods attempts to register the point cloud versus the map using the affine transformation guess "Tm"
 protected:
   bool enableRegistration_;
   bool registration2d_;
@@ -21,10 +21,12 @@ protected:
   double translationRegistrationDelta_, rotationRegistrationDelta_;
   double sensorRange_;
   double mapSizeZ_;
-  registrationType(const Affine3d &sensor_pose,regParamPtr regparam);
+  unsigned int  failed_registrations_;
+  unsigned int  succesfull_registrations_;
+  registrationType(const Affine3d &sensor_pose,RegParamPtr regparam);
   Eigen::Affine3d sensorPose_;//Translation between robot and sensor frame
 private:
-  friend class graphfactory;
+  friend class GraphFactory;
 };
 
 
@@ -43,7 +45,7 @@ public:
 protected:
   registrationParameters();
 private:
-  friend class graphfactory;
+  friend class GraphFactory;
 };
 
 

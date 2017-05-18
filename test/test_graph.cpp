@@ -32,9 +32,9 @@ int main(int argc, char **argv){
   diag1.diagonal()<<0.15,0.15,0.15,0.01,0.01,0.01;
   cov=diag1; //Create covariance to represent uncertainty betweem mpde
 
-  mapParamPtr param=graphfactory::CreateMapParam(maptype);
-  GraphParamPtr graphparam=graphfactory::CreateGraphParam();
-  GraphMapPtr graph=graphfactory::CreateGraph(initPose,param,graphparam);
+  MapParamPtr param=GraphFactory::CreateMapParam(maptype);
+  GraphParamPtr graphparam=GraphFactory::CreateGraphParam();
+  GraphMapPtr graph=GraphFactory::CreateGraph(initPose,param,graphparam);
 
   cout<<"size of graph :"<<graph->MapSize()<<endl;
 
@@ -42,7 +42,7 @@ int main(int argc, char **argv){
   graph->AddMapNode(param,diff,cov);
   graph->AddMapNode(param,diff,cov);
   cout<<"size of graph :"<<graph->MapSize()<<endl;
-  graphPlot::PlotPoseGraph(graph);
+  GraphPlot::PlotPoseGraph(graph);
   cout<<graph->ToString()<<endl;
   pcl::PointCloud<pcl::PointXYZ> cloud;
 

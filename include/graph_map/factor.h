@@ -12,7 +12,7 @@ public:
   virtual void GetNodes(NodePtr prev, NodePtr next){prev=prev_;next=next_;}
   //factor();
   //factor(mapNodePtr prev, mapNodePtr next){prev_=prev; next_=next;}
-  factor(mapNodePtr prev, NodePtr next,const Eigen::Affine3d &diff){
+  factor(MapNodePtr prev, NodePtr next,const Eigen::Affine3d &diff){
     prev_=prev;
     next_=next;
     diff_=diff;
@@ -23,7 +23,7 @@ protected:
   NodePtr prev_,next_;
   Matrix6d covar_;
 private:
-  friend class graphfactory;
+  friend class GraphFactory;
 
 
 };

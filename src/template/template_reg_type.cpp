@@ -4,7 +4,7 @@
 namespace libgraphMap{
 
 
-TemplateRegType::TemplateRegType(const Affine3d &sensor_pose,regParamPtr paramptr):registrationType(sensor_pose,paramptr){
+TemplateRegType::TemplateRegType(const Affine3d &sensor_pose,RegParamPtr paramptr):registrationType(sensor_pose,paramptr){
 
   TemplateRegTypeParamPtr param = boost::dynamic_pointer_cast< TemplateRegTypeParam >(paramptr);//Should not be NULL
   if(param!=NULL){
@@ -17,12 +17,11 @@ TemplateRegType::TemplateRegType(const Affine3d &sensor_pose,regParamPtr parampt
 
 TemplateRegType::~TemplateRegType(){}
 
-bool TemplateRegType::Register(mapTypePtr maptype,Eigen::Affine3d &Tnow, const Eigen::Affine3d &Tmotion,pcl::PointCloud<pcl::PointXYZ> &cloud) {
+bool TemplateRegType::Register(MapTypePtr maptype,Eigen::Affine3d &Tnow,pcl::PointCloud<pcl::PointXYZ> &cloud) {
 
-  Eigen::Affine3d Tinit = Tnow * Tmotion;//Prediction for registration
   if(!enableRegistration_||!maptype->Initialized()){
     cout<<"Registration disabled - motion based on odometry"<<endl;
-    Tnow=Tinit;
+
     return false;
   }
   else{

@@ -2,15 +2,15 @@
 #include "graph_map/graph_map.h"
 
 namespace libgraphMap{
-bool graphPlot::initialized_=false;
-ros::NodeHandle* graphPlot::nh_=NULL;
-ros::Publisher* graphPlot::localMapPublisher_=NULL;
-ros::Publisher* graphPlot::graphPosePublisher_=NULL;
-ros::Publisher* graphPlot::graphInfoPublisher_=NULL;
-ros::Publisher* graphPlot::globalMapPublisher_=NULL;
-ros::Publisher* graphPlot::global2MapPublisher_=NULL;
+bool GraphPlot::initialized_=false;
+ros::NodeHandle* GraphPlot::nh_=NULL;
+ros::Publisher* GraphPlot::localMapPublisher_=NULL;
+ros::Publisher* GraphPlot::graphPosePublisher_=NULL;
+ros::Publisher* GraphPlot::graphInfoPublisher_=NULL;
+ros::Publisher* GraphPlot::globalMapPublisher_=NULL;
+ros::Publisher* GraphPlot::global2MapPublisher_=NULL;
 
-void graphPlot::Initialize(){
+void GraphPlot::Initialize(){
   cout<<"graph_plot: initialize"<<endl;
   nh_=new ros::NodeHandle("");
   graphPosePublisher_=    new ros::Publisher();
@@ -27,7 +27,7 @@ void graphPlot::Initialize(){
 
   initialized_=true;
 }
-void graphPlot::PlotPoseGraph(GraphMapPtr graph){
+void GraphPlot::PlotPoseGraph(GraphMapPtr graph){
   if(!initialized_)
     Initialize();
   //Publish poses
@@ -75,7 +75,7 @@ void graphPlot::PlotPoseGraph(GraphMapPtr graph){
 
 
 }
-void graphPlot::makeRightHanded( Eigen::Matrix3d& eigenvectors, Eigen::Vector3d& eigenvalues)
+void GraphPlot::makeRightHanded( Eigen::Matrix3d& eigenvectors, Eigen::Vector3d& eigenvalues)
 {
   // Note that sorting of eigenvalues may end up with left-hand coordinate system.
   // So here we correctly sort it so that it does end up being righ-handed and normalised.
@@ -90,7 +90,7 @@ void graphPlot::makeRightHanded( Eigen::Matrix3d& eigenvectors, Eigen::Vector3d&
     eigenvectors << c0, c1, c2;
   }
 }
-void graphPlot::computeShapeScaleAndOrientation3D(const Eigen::Matrix3d& covariance, Eigen::Vector3d& scale, Eigen::Quaterniond& orientation)
+void GraphPlot::computeShapeScaleAndOrientation3D(const Eigen::Matrix3d& covariance, Eigen::Vector3d& scale, Eigen::Quaterniond& orientation)
 {
   Eigen::Vector3d eigenvalues(Eigen::Vector3d::Identity());
   Eigen::Matrix3d eigenvectors(Eigen::Matrix3d::Zero());
@@ -124,7 +124,7 @@ void graphPlot::computeShapeScaleAndOrientation3D(const Eigen::Matrix3d& covaria
   scale(2) = 2*std::sqrt (eigenvalues[2]);
 }
 
-void graphPlot::CovarToMarker(const Eigen::Matrix3d &cov,const Eigen::Vector3d &mean,visualization_msgs::Marker &marker){
+void GraphPlot::CovarToMarker(const Eigen::Matrix3d &cov,const Eigen::Vector3d &mean,visualization_msgs::Marker &marker){
   if(!initialized_)
     Initialize();
 
@@ -164,7 +164,7 @@ void graphPlot::CovarToMarker(const Eigen::Matrix3d &cov,const Eigen::Vector3d &
   marker.pose.position.z=mean(2);
 
 }
-void graphPlot::sendMapToRviz(mean_vector &mean, cov_vector &cov, ros::Publisher *mapPublisher, string frame, int color,const Affine3d &offset,string ns,int markerType){
+void GraphPlot::sendMapToRviz(mean_vector &mean, cov_vector &cov, ros::Publisher *mapPublisher, string frame, int color,const Affine3d &offset,string ns,int markerType){
   static unsigned int max_size=0;
   if(!initialized_)
     Initialize();
@@ -219,7 +219,7 @@ void graphPlot::sendMapToRviz(mean_vector &mean, cov_vector &cov, ros::Publisher
   mapPublisher->publish(marray);
 
 }
-void graphPlot::SendLocalMapToRviz(lslgeneric::NDTMap *mapPtr,int color,const Affine3d &offset){
+void GraphPlot::SendLocalMapToRviz(lslgeneric::NDTMap *mapPtr,int color,const Affine3d &offset){
   cov_vector cov;
   mean_vector mean;
   if(!initialized_)
@@ -227,7 +227,7 @@ void graphPlot::SendLocalMapToRviz(lslgeneric::NDTMap *mapPtr,int color,const Af
   GetAllCellsMeanCov(mapPtr,cov,mean);
   sendMapToRviz(mean,cov,localMapPublisher_,"state_base_link",color,offset,"local");
 }
-void graphPlot::GetAllCellsMeanCov(const lslgeneric::NDTMap *mapPtr,cov_vector &cov,mean_vector &mean){
+void GraphPlot::GetAllCellsMeanCov(const lslgeneric::NDTMap *mapPtr,cov_vector &cov,mean_vector &mean){
   cov.clear();
   mean.clear();
   std::vector<lslgeneric::NDTCell*>cells=mapPtr->getAllCells();
@@ -238,7 +238,7 @@ void graphPlot::GetAllCellsMeanCov(const lslgeneric::NDTMap *mapPtr,cov_vector &
     // delete cells[i];
   }
 }
-void graphPlot::GetAllCellsMeanCov( std::vector<lslgeneric::NDTCell*>cells,cov_vector &cov,mean_vector &mean){
+void GraphPlot::GetAllCellsMeanCov( std::vector<lslgeneric::NDTCell*>cells,cov_vector &cov,mean_vector &mean){
   cov.clear();
   mean.clear();
   for(int i=0;i<cells.size();i++){
@@ -248,7 +248,7 @@ void graphPlot::GetAllCellsMeanCov( std::vector<lslgeneric::NDTCell*>cells,cov_v
   }
 }
 
-void graphPlot::SendGlobalMapToRviz(lslgeneric::NDTMap *mapPtr, int color,const Affine3d &offset){
+void GraphPlot::SendGlobalMapToRviz(lslgeneric::NDTMap *mapPtr, int color,const Affine3d &offset){
   cov_vector cov;
   mean_vector mean;
   if(!initialized_)
@@ -257,7 +257,7 @@ void graphPlot::SendGlobalMapToRviz(lslgeneric::NDTMap *mapPtr, int color,const 
   GetAllCellsMeanCov(mapPtr,cov,mean);
   sendMapToRviz(mean,cov,globalMapPublisher_,"world",color,offset,"current");
 }
-void graphPlot::SendGlobal2MapToRviz(lslgeneric::NDTMap *mapPtr, int color,const Affine3d &offset){
+void GraphPlot::SendGlobal2MapToRviz(lslgeneric::NDTMap *mapPtr, int color,const Affine3d &offset){
   cov_vector cov;
   mean_vector mean;
   if(!initialized_)
@@ -265,7 +265,7 @@ void graphPlot::SendGlobal2MapToRviz(lslgeneric::NDTMap *mapPtr, int color,const
   GetAllCellsMeanCov(mapPtr,cov,mean);
   sendMapToRviz(mean,cov,globalMapPublisher_,"world",color,offset,"prev",visualization_msgs::Marker::CUBE);
 }
-void graphPlot::SendGlobal2MapToRviz(  std::vector<lslgeneric::NDTCell*>cells, int color,const Affine3d &offset){
+void GraphPlot::SendGlobal2MapToRviz(  std::vector<lslgeneric::NDTCell*>cells, int color,const Affine3d &offset){
   cov_vector cov;
   mean_vector mean;
 

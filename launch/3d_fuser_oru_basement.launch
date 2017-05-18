@@ -7,12 +7,16 @@
 
 <node pkg="graph_map" type="graph_map_fuser_node" name="graph_node" output="screen">
 
+      <param name="renderGTmap" value="false" />
+      <param name="gt_topic" value="/vmc_navserver/state" />
+      <param name="initPoseFromGT" value="true" />
+
       <param name="map_type" value="ndt_2d_map" />
       <param name="registration_type" value="ndt_d2d_reg" />
 
       <param name="use_submap" value="true" />
-      <param name="interchange_radius" value="1.5" />
-      <param name="compound_radius" value="2.5" />
+      <param name="interchange_radius" value="15" />
+      <param name="compound_radius" value="15" />
 
       <param name="enable_registration" value="true" />
       <param name="enable_mapping" value="true" />
@@ -29,13 +33,13 @@
       <param name="max_translation_norm" value="0.4" />
       <param name="max_rotation_norm" value="0.78539816339" />
 
-      <param name="size_x_meters" value="50" />
-      <param name="size_y_meters" value="50" />
-      <param name="size_z_meters" value="4.5" />
+      <param name="size_x_meters" value="60" />
+      <param name="size_y_meters" value="60" />
+      <param name="size_z_meters" value="6" />
 
-      <param name="resolution" value="0.5" />
+      <param name="resolution" value="0.6" />
       <!--<param name="laser_variance_z" value="0.02" /> -->
-      <param name="sensor_range" value="20." />
+      <param name="sensor_range" value="15." />
       <param name="min_laser_range" value="0.6" />
 
       <!-- Specific sensor offset parameters for the example file -->
@@ -52,8 +56,7 @@
 
       <param name="visualize" value="true" />
       <param name="plotGTTrack" value="true" />
-      <param name="initPoseFromGT" value="true" />
-      <param name="gt_topic" value="/vmc_navserver/state" />
+
   </node>
 
 <node pkg="rviz" type="rviz" name="rviz" args="-d $(find graph_map)/launch/3d.rviz" />

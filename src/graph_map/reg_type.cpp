@@ -6,7 +6,7 @@ namespace libgraphMap{
 
 
 /* -------Registration type---------------- */
-registrationType::registrationType(const Eigen::Affine3d &sensor_pose, regParamPtr regparam){
+registrationType::registrationType(const Eigen::Affine3d &sensor_pose, RegParamPtr regparam){
   if(regparam!=NULL){
   sensorPose_=sensor_pose;
   cout<<"created registration with sensor pose=\n"<<sensor_pose.translation()<<"\n linear=\n"<<sensor_pose.linear()<<endl;
@@ -19,6 +19,8 @@ registrationType::registrationType(const Eigen::Affine3d &sensor_pose, regParamP
   rotationRegistrationDelta_=regparam->rotationRegistrationDelta_;
   sensorRange_        =regparam->sensorRange_;
   mapSizeZ_           =regparam->mapSizeZ_;
+  failed_registrations_=0;
+  succesfull_registrations_=0;
   cout<<"sucessfully applied registration parameters"<<endl;
   }
   else

@@ -38,14 +38,14 @@ class MapNode:public Node{
 public:
   virtual void updateMap(const Eigen::Affine3d &Tnow,pcl::PointCloud<pcl::PointXYZ> &cloud);
   virtual bool Initialized(){return initialized_;}
-  virtual mapTypePtr GetMap(){return map_;}
+  virtual MapTypePtr GetMap(){return map_;}
   virtual string ToString();
 protected:
-  mapTypePtr map_;
-  MapNode(const Eigen::Affine3d &pose,const mapParamPtr &mapparam);
+  MapTypePtr map_;
+  MapNode(const Eigen::Affine3d &pose,const MapParamPtr &mapparam);
   bool initialized_=false;
 private:
-  friend class graphfactory;
+  friend class GraphFactory;
   /*-----Boost serialization------*/
   friend class boost::serialization::access;
   template<class Archive>

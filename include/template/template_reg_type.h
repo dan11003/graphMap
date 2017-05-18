@@ -18,12 +18,12 @@ namespace libgraphMap{
 class TemplateRegType:public registrationType{
 public:
   ~TemplateRegType();
-  bool Register(mapTypePtr maptype, Eigen::Affine3d &Tnow, const Eigen::Affine3d &Tmotion, pcl::PointCloud<pcl::PointXYZ> &cloud);//This methods attempts to register the point cloud versus the map using Tmotion as a first guess
+  bool Register(MapTypePtr maptype, Eigen::Affine3d &Tnow, pcl::PointCloud<pcl::PointXYZ> &cloud);//This methods attempts to register the point cloud versus the map using Tmotion as a first guess
 protected:
   string super_important_parameter_;
-  TemplateRegType(const Affine3d &sensor_pose,regParamPtr paramptr);
+  TemplateRegType(const Affine3d &sensor_pose,RegParamPtr paramptr);
 private:
-  friend class graphfactory;
+  friend class GraphFactory;
 };
 
 
@@ -36,7 +36,7 @@ public:
 protected:
   TemplateRegTypeParam();//Constructor is protected to allow only graphcatory to instanciate or derived classes create this type
 private:
-  friend class graphfactory;
+  friend class GraphFactory;
 
 };
 }
