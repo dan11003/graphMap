@@ -269,7 +269,8 @@ public:
     frame_nr_++;
 
 
-    if((Tmotion.translation().norm() <0.01 && Tmotion.rotation().eulerAngles(0,1,2)(2)< 0.01) && useOdometry) {    //sanity check for odometry
+    if((Tmotion.translation().norm() <0.005 && Tmotion.rotation().eulerAngles(0,1,2)(2)< 0.005) && useOdometry) {    //sanity check for odometry
+      //cout<<"norm:" <<Tmotion.translation().norm()<<endl;
       std::cerr<<"No motion, skipping Frame\n";
       return;
     }
@@ -388,7 +389,7 @@ public:
     pcl::PointCloud<pcl::PointXYZ> cloud;
     tf::poseMsgToEigen(odo_in->pose.pose,this_odom);
 
-    if (frame_nr_  == 0)
+    if (frame_nr_ == 0)
       Tm.setIdentity();
     else {
       Tm = last_odom.inverse()*this_odom;

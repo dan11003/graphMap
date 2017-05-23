@@ -44,7 +44,7 @@ string GraphMap::ToString(){
   return s;
 }
 Affine3d GraphMap::GetNodePose(int nodeNr){
-  if(nodeNr<MapSize())
+  if(nodeNr<GraphSize())
     return nodes_[nodeNr]->GetPose();
 }
 Affine3d GraphMap::GetCurrentNodePose(){
@@ -53,61 +53,23 @@ Affine3d GraphMap::GetCurrentNodePose(){
 Affine3d GraphMap::GetPreviousNodePose(){
   return prevNode_->GetPose();
 }
-bool GraphMap::SwitchToClosestMapNode(Affine3d &Tnow, const Matrix6d &cov, Affine3d & T_world_to_local_map,const double radius){
-  bool node_found=false;
-  MapNodePtr closest_map_node=NULL;
-  double closest_distance=-1.0;
-  cout<<"currently at pose="<<Tnow.translation()<<endl;
-  for(std::vector<NodePtr>::iterator itr_node = nodes_.begin(); itr_node != nodes_.end(); ++itr_node) { //loop thorugh all existing nodes
-    if( (*itr_node)->WithinRadius(Tnow,radius) ){ //if a node is within radius of pose and the node is of type "map type"
-      if(  MapNodePtr found_map_node_ptr = boost::dynamic_pointer_cast< MapNode >(*itr_node) ){ //A map node has now been found within radius)
-        double found_distance= Eigen::Vector3d(Tnow.translation()-(*itr_node)->GetPose().translation()).norm();//Euclidian distance between robot pose and map node pose;
-        cout<<"Node is within range of previously created map, distance="<<found_distance<<endl;
-        if(closest_distance==-1.0|| found_distance<closest_distance){
-          node_found=true;
-          closest_map_node=found_map_node_ptr;
-          closest_distance=found_distance;
-          cout<<"closest node found at pose=\n"<<closest_map_node->GetPose().translation()<<endl;
-        }
-      }
-      else
-        cout<<"wrong type of previously created node"<<endl;
-    }
+NodePtr GraphMap::GetNode(int nodeNr){
+  if(nodeNr<GraphSize()){
+    return nodes_[nodeNr];
   }
-  if(node_found){//if any node at all was found, switch to the closest and update Tnow & T_world_to_local_map (transformation to current node)
-    prevNode_=currentNode_;
-    currentNode_=closest_map_node; //switch to that node
-  }
-  return node_found;
 }
-
-bool GraphMap::AutomaticMapInterchange(Affine3d &Tnow, const Matrix6d &cov, Affine3d & T_world_to_local_map){
-  bool mapChanged=false;
-  if(use_submap_==false)
-    return false;
-
-  Tnow=T_world_to_local_map.inverse()*Tnow;//map Tnow to world frame
-  if(! currentNode_->WithinRadius(Tnow,interchange_radius_)){ //No longer within radius of node
-    cout<<"Left boundries of previous map, will  search through "<<nodes_.size()<<" node(s) to find a map node within range of"<<interchange_radius_<<"m"<<endl;
-    if( SwitchToClosestMapNode(Tnow,cov,T_world_to_local_map,interchange_radius_)){
-      cout<<"switched to node="<<currentNode_->GetPose().translation()<<endl;
-    }
-    else{
-      cout<<"No node was found, will create a new map pose."<<endl;
-      prevNode_=currentNode_;
-      NDT2DMapPtr prev_ndt_map = boost::dynamic_pointer_cast< NDTMapType >(prevNode_->GetMap());
-      AddMapNode(mapparam_,T_world_to_local_map*Tnow,cov); //if no node already exists, create a new node
-      //Tdiff.translation()=T_target.translation()-T_source.translation();
-      //pcl::PointXYZ center_pcl(Tdiff.translation()(0),Tdiff.translation()(1),Tdiff.translation()(2));
-      prevNode_->GetMap()->CompoundMapsByRadius(currentNode_->GetMap(),prevNode_->GetPose(),currentNode_->GetPose(),compound_radius_);
-      mapChanged=true;
+/*std::vector<FactorPtr> GraphMap::GetFactors(NodePtr node){
+  std::vector<FactorPtr> factors;
+  for(int i=0;i<factors_.size();i++){
+    if(factors_[i]->Connects(node)){
+      factors_[i]
     }
   }
-  T_world_to_local_map=currentNode_->GetPose().inverse();
-  Tnow=T_world_to_local_map*Tnow;//map Tnow from global to new local frame
-  return mapChanged;
+  return factors;
+}*/
+void GraphMap::AddFactor(MapNodePtr prev, MapNodePtr next,Affine3d Tdiff,Matrix6d cov){
+ factors_.push_back(GraphFactory::CreateMapNodeFactor(prev,next,Tdiff,cov));
 }
-
 
 GraphParam::GraphParam(){
   GetParametersFromRos();

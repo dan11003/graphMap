@@ -65,21 +65,31 @@ bool NDTD2DRegType::Register(MapTypePtr maptype,Eigen::Affine3d &Tnow,pcl::Point
       return false;
     }
     else{
-    Tnow = Tinit;//return registered value
-    return true;
+      Tnow = Tinit;//return registered value
+      return true;
     }
   }
   else{
-  cerr<<"Registration unsuccesfull"<<endl;
-  return false;
+    cerr<<"Registration unsuccesfull"<<endl;
+    return false;
   }
 }
+bool NDTD2DRegType::RegisterMap2Map(MapTypePtr map_prev,MapTypePtr map_next, Eigen::Affine3d &Tdiff,double match_score){
 
-
-
-
-
-
+  NDTMap *prev,*next;
+  bool match_succesfull;
+  prev=(boost::dynamic_pointer_cast<NDTMapType>(map_prev))->GetMap();
+  next=(boost::dynamic_pointer_cast<NDTMapType>(map_next))->GetMap();
+  if(registration2d_){
+    match_succesfull=matcher2D_.match(*prev,*next,Tdiff,true);
+  }
+  else if(!registration2d_){
+    match_succesfull=matcher3D_.match( *prev,*next,Tdiff,true);
+  }
+  cout<<"diff after reg-trans=\n"<<Tdiff.translation()<<endl;
+  cout<<"diff after reg-rot=\n="<<Tdiff.linear()<<endl;
+  return match_succesfull;
+}
 
 /* ----------- Parameters ------------*/
 ndtd2dRegParam::~ndtd2dRegParam(){}

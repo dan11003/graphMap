@@ -15,12 +15,12 @@
       <param name="registration_type" value="ndt_d2d_reg" />
 
       <param name="use_submap" value="true" />
-      <param name="interchange_radius" value="15" />
-      <param name="compound_radius" value="15" />
+      <param name="interchange_radius" value="4" />
+      <param name="compound_radius" value="2" />
 
       <param name="enable_registration" value="true" />
       <param name="enable_mapping" value="true" />
-      <param name="registration_2D" value="false" />
+      <param name="registration_2D" value="true" />
       <param name="check_consistency" value="true" />
 
       <param name="matchLaser" value="false" />

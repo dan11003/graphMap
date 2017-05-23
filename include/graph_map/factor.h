@@ -9,10 +9,11 @@ namespace libgraphMap{
 typedef enum factoryype{observationFactor=0,poseFactor=1}factorType;
 class factor{
 public:
+  virtual bool Connects(NodePtr node);
   virtual void GetNodes(NodePtr prev, NodePtr next){prev=prev_;next=next_;}
   //factor();
   //factor(mapNodePtr prev, mapNodePtr next){prev_=prev; next_=next;}
-  factor(MapNodePtr prev, NodePtr next,const Eigen::Affine3d &diff){
+  factor(MapNodePtr prev, NodePtr next,const Eigen::Affine3d &diff,const Matrix6d &cov){
     prev_=prev;
     next_=next;
     diff_=diff;

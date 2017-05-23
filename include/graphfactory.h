@@ -99,6 +99,9 @@ typedef boost::shared_ptr<MapNode> MapNodePtr;
 class GraphMap;
 typedef boost::shared_ptr<GraphMap> GraphMapPtr;
 
+class GraphMapNavigator;
+typedef boost::shared_ptr<GraphMapNavigator> GraphMapNavigatorPtr;
+
 class GraphParam;
 typedef boost::shared_ptr<GraphParam> GraphParamPtr;
 
@@ -111,17 +114,18 @@ typedef boost::shared_ptr<GraphParam> GraphParamPtr;
  */
 class GraphFactory{
 public:
-  static MapParamPtr   CreateMapParam(string MapType);
-  static MapTypePtr    CreateMap(MapParamPtr mapparam);
+  static MapParamPtr          CreateMapParam(string MapType);
+  static MapTypePtr           CreateMap(MapParamPtr mapparam);
+  static GraphMapNavigatorPtr CreateGraphNavigator(const Eigen::Affine3d &nodepose, MapParamPtr &mapparam, GraphParamPtr graphparam);
 
-  static GraphParamPtr CreateGraphParam();
-  static GraphMapPtr   CreateGraph(const Eigen::Affine3d &nodepose, MapParamPtr &mapparam,GraphParamPtr graphparam);
-  static MapNodePtr    CreateMapNode(const Eigen::Affine3d &pose,const MapParamPtr &mapparam);
-  static FactorPtr     CreateObservationFactor(MapNodePtr mapPose, NodePtr observationPose,const Eigen::Affine3d &diff,const Matrix6d &covar);
-  static FactorPtr     CreateMapNodeFactor(MapNodePtr prevMapPose, MapNodePtr nextMapPose,const Eigen::Affine3d &diff,const Matrix6d &covar);
+  static GraphParamPtr        CreateGraphParam();
+  static GraphMapPtr          CreateGraph(const Eigen::Affine3d &nodepose, MapParamPtr &mapparam,GraphParamPtr graphparam);
+  static MapNodePtr           CreateMapNode(const Eigen::Affine3d &pose,const MapParamPtr &mapparam);
+  static FactorPtr            CreateObservationFactor(MapNodePtr mapPose, NodePtr observationPose,const Eigen::Affine3d &diff,const Matrix6d &covar);
+  static FactorPtr            CreateMapNodeFactor(MapNodePtr prevMapPose, MapNodePtr nextMapPose, const Eigen::Affine3d &diff, const Matrix6d &covar);
 
-  static RegTypePtr    CreateRegistrationType(const Eigen::Affine3d &sensor_pose, RegParamPtr regparam);
-  static RegParamPtr   CreateRegParam(string regType);
+  static RegTypePtr           CreateRegistrationType(const Eigen::Affine3d &sensor_pose, RegParamPtr regparam);
+  static RegParamPtr          CreateRegParam(string regType);
 
 
 

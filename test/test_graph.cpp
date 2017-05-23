@@ -36,12 +36,12 @@ int main(int argc, char **argv){
   GraphParamPtr graphparam=GraphFactory::CreateGraphParam();
   GraphMapPtr graph=GraphFactory::CreateGraph(initPose,param,graphparam);
 
-  cout<<"size of graph :"<<graph->MapSize()<<endl;
+  cout<<"size of graph :"<<graph->GraphSize()<<endl;
 
   graph->AddMapNode(param,diff,cov);
   graph->AddMapNode(param,diff,cov);
   graph->AddMapNode(param,diff,cov);
-  cout<<"size of graph :"<<graph->MapSize()<<endl;
+  cout<<"size of graph :"<<graph->GraphSize()<<endl;
   GraphPlot::PlotPoseGraph(graph);
   cout<<graph->ToString()<<endl;
   pcl::PointCloud<pcl::PointXYZ> cloud;

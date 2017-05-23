@@ -2,11 +2,10 @@
 namespace libgraphMap{
 using namespace std;
 GraphMapFuser::GraphMapFuser(string maptype, string registratorType, Eigen::Affine3d initPose, const Eigen::Affine3d &sensorPose){
-
   registratorType_=registratorType;
   mapParam_=GraphFactory::CreateMapParam(maptype);
   graph_param_=GraphFactory::CreateGraphParam();
-  graph_ =GraphFactory::CreateGraph(initPose,mapParam_,graph_param_);
+  Graph_nav_ =GraphFactory::CreateGraphNavigator(initPose,mapParam_,graph_param_);
   regParam_=GraphFactory::CreateRegParam(registratorType);
   registrator_=GraphFactory::CreateRegistrationType(sensorPose,regParam_);
   sensorPose_=sensorPose;
@@ -20,14 +19,26 @@ GraphMapFuser::GraphMapFuser(string maptype, string registratorType, Eigen::Affi
  */
 void GraphMapFuser::ProcessFrame(pcl::PointCloud<pcl::PointXYZ> &cloud, Eigen::Affine3d &Tnow){
   //in sensor frame
-  bool mapChange=false;
-  Eigen::Affine3d T_world_to_local_map=graph_->GetCurrentNodePose().inverse(); //transformation from node to world frame
+  bool map_node_changed=false,map_node_created,registration_succesfull=false;
+  Eigen::Affine3d T_world_to_local_map=Graph_nav_->GetCurrentNodePose().inverse(); //transformation from node to world frame
   Tnow=T_world_to_local_map*Tnow;//change frame to local map
   //cout<<"New frame:global Tnow=\n"<<(T_world_to_local_map.inverse()*Tnow).translation() <<endl;
   if(frameNr_>=0){
     lslgeneric::transformPointCloudInPlace(sensorPose_, cloud);//Transform cloud into robot frame before registrating
-    registrator_->Register(graph_->GetCurrentNode()->GetMap(),Tnow,cloud);//Tnow will be updated to the actual pose of the robot according to ndt-d2d registration
-    mapChange=graph_->AutomaticMapInterchange(Tnow,unit_covar,T_world_to_local_map);
+    registration_succesfull= registrator_->Register(Graph_nav_->GetCurrentNode()->GetMap(),Tnow,cloud);//Tnow will be updated to the actual pose of the robot according to ndt-d2d registration
+    if(Graph_nav_->AutomaticMapInterchange(Tnow,unit_covar,T_world_to_local_map,map_node_changed,map_node_created) && map_node_changed)
+    {
+      //double score;
+      //Affine3d Tdiff=Graph_nav_->GetPreviousNodePose().inverse()*Graph_nav_->GetCurrentNodePose();
+      //Tdiff.translation()=Tdiff.translation()+Vector3d(0.1,0.1,0.1);
+      //cout<<"Tdiff with offset=\n"<<Tdiff.translation()<<endl;
+      //registrator_->RegisterMap2Map(Graph_nav_->GetPreviousNode()->GetMap(),Graph_nav_->GetCurrentNode()->GetMap(),Tdiff,score);
+      //Graph_nav_->AddFactor(Graph_nav_->GetPreviousNode(),Graph_nav_->GetCurrentNode(),Tdiff,unit_covar);
+    }
+  }
+  if(!registration_succesfull){
+    Tnow=T_world_to_local_map.inverse()*Tnow;//remap Tnow to global map frame
+    return;
   }
 
   lslgeneric::transformPointCloudInPlace(Tnow, cloud);// The cloud should now be centered around the robot pose in the map frame
@@ -36,12 +47,12 @@ void GraphMapFuser::ProcessFrame(pcl::PointCloud<pcl::PointXYZ> &cloud, Eigen::A
     NDT2DMapPtr curr_node = boost::dynamic_pointer_cast< NDTMapType >(graph_->GetCurrentNode()->GetMap());
     GraphPlot::SendGlobal2MapToRviz(curr_node->GetMap(),0,T_world_to_local_map.inverse());
   }*/
-  graph_->GetCurrentNode()->updateMap(scanSourcePose,cloud);//Update map
+  Graph_nav_->GetCurrentNode()->updateMap(scanSourcePose,cloud);//Update map
   Tnow=T_world_to_local_map.inverse()*Tnow;//remap Tnow to global map frame
   //--------plot
-  NDT2DMapPtr curr_node = boost::dynamic_pointer_cast< NDTMapType >(graph_->GetCurrentNode()->GetMap());
-  //GraphPlot::SendGlobalMapToRviz(curr_node->GetMap(),1,T_world_to_local_map.inverse());
-  GraphPlot::PlotPoseGraph(graph_);
+  NDT2DMapPtr curr_node = boost::dynamic_pointer_cast< NDTMapType >(Graph_nav_->GetCurrentNode()->GetMap());
+  GraphPlot::SendGlobalMapToRviz(curr_node->GetMap(),1,T_world_to_local_map.inverse());
+  GraphPlot::PlotPoseGraph(Graph_nav_);
   //-------end of plo
   frameNr_++;
 }
@@ -56,7 +67,7 @@ void GraphMapFuser::plotGTCloud(pcl::PointCloud<pcl::PointXYZ> &cloud){
 }
 
 bool GraphMapFuser::ErrorStatus(string status){
-  if(graph_!=NULL && registrator_!=NULL){
+  if(Graph_nav_!=NULL && registrator_!=NULL){
     return false;
   }
   else{

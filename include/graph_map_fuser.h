@@ -4,7 +4,7 @@
 #include "iostream"
 #include "graphfactory.h"
 #include "graph_map/map_type.h"
-#include "graph_map/graph_map.h"
+#include "graph_map/graph_map_navigator.h"
 #include "graph_map/reg_type.h"
 #include "ndt/ndtd2d_reg_type.h"
 #include <pcl/point_cloud.h>
@@ -30,7 +30,7 @@ protected:
   string maptype_,registratorType_;
   Eigen::Affine3d initPose_,sensorPose_;
   MapParamPtr mapParam_;
-  GraphMapPtr graph_;
+  GraphMapNavigatorPtr Graph_nav_;
   GraphParamPtr graph_param_;
   RegParamPtr regParam_;
   RegTypePtr registrator_;

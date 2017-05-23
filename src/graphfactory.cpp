@@ -5,11 +5,13 @@
 #include "ndt/ndt_map_type.h"
 #include "graph_map/map_node.h"
 #include "graph_map/graph_map.h"
+#include "graph_map/graph_map_navigator.h"
 #include "graph_map/reg_type.h"
 #include "ndt/ndtd2d_reg_type.h"
 #include "Eigen/Geometry"
 #include "template/template_map_type.h"
 #include "template/template_reg_type.h"
+
 namespace libgraphMap{
 
 
@@ -49,8 +51,18 @@ GraphMapPtr GraphFactory::CreateGraph(const Eigen::Affine3d &nodepose, MapParamP
 
   if(mapparam!=NULL){
     cout<<"Graphfactory: Creating graph"<<endl;
-    GraphMapPtr graphPtr=boost::shared_ptr<GraphMap>(new GraphMap(nodepose,mapparam,graphparam));
+    GraphMapPtr graphPtr=GraphMapPtr(new GraphMapNavigator(nodepose,mapparam,graphparam));
     return graphPtr;
+  }
+  else{
+    cout<<"Graphfactory: parameter NULL to graph"<<endl;
+    return NULL;
+  }
+}
+GraphMapNavigatorPtr GraphFactory::CreateGraphNavigator(const Eigen::Affine3d &nodepose, MapParamPtr &mapparam, GraphParamPtr graphparam){
+  if(mapparam!=NULL){
+    cout<<"Graphfactory: Creating graph"<<endl;
+    return GraphMapNavigatorPtr(new GraphMapNavigator(nodepose,mapparam,graphparam));
   }
   else{
     cout<<"Graphfactory: parameter NULL to graph"<<endl;
@@ -89,7 +101,7 @@ RegParamPtr GraphFactory::CreateRegParam(string regType){
 }
 
 FactorPtr GraphFactory::CreateMapNodeFactor(MapNodePtr prevMapPose, MapNodePtr nextMapPose, const Eigen::Affine3d &diff, const Matrix6d &covar){
-  FactorPtr factorptr=boost::shared_ptr<factor>(new factor(prevMapPose,nextMapPose,diff));
+  FactorPtr factorptr=boost::shared_ptr<factor>(new factor(prevMapPose,nextMapPose,diff,covar));
   return factorptr;
 }
 

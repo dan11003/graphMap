@@ -1,6 +1,7 @@
 #ifndef GRAPH_MAP_H
 #define GRAPH_MAP_H
 #include "graphfactory.h"
+#include "graph_map/factor.h"
 #include "graph_map/map_type.h"
 #include "graph_map/map_node.h"
 #include "stdio.h"
@@ -30,22 +31,24 @@ public:
    * \param cov contain the movement uncertainty accumulated since last node
    * \param T_world_to_local pre: Not used: Post T_world_to_local contain the mapping from world to the current local mapNode frame.
    */
-  bool AutomaticMapInterchange(Affine3d &Tnow, const Matrix6d &cov, Affine3d & T_world_to_local_map);
+
   virtual void AddMapNode(const MapParamPtr &mapparam,const Eigen::Affine3d &diff,const Matrix6d &cov);//
   MapNodePtr GetCurrentNode();
   MapNodePtr GetPreviousNode();
-  uint32_t MapSize(){return nodes_.size();}
+  uint32_t GraphSize(){return nodes_.size();}
   virtual string ToString();
+  virtual NodePtr GetNode(int nodeNr);
   virtual Affine3d GetNodePose(int nodeNr);
   virtual Eigen::Affine3d GetCurrentNodePose();
   virtual Eigen::Affine3d GetPreviousNodePose();
+  virtual void AddFactor(MapNodePtr prev, MapNodePtr next, Affine3d Tdiff, Matrix6d cov);
+  //virtual std::vector<FactorPtr> GetFactors(NodePtr node);//Get all factors for current node
 protected:
   GraphMap(const Eigen::Affine3d &nodepose, const MapParamPtr &mapparam, const GraphParamPtr graphparam);
-  bool SwitchToClosestMapNode(Affine3d &Tnow, const Matrix6d &cov, Affine3d & T_world_to_local_map,const double radius);
   MapNodePtr currentNode_,prevNode_;//The current node
   std::vector<NodePtr> nodes_;//Vector of all nodes in graph
   std::vector<FactorPtr> factors_;
-  MapParamPtr mapparam_;
+  MapParamPtr mapparam_;//
 
   bool use_submap_;
   double interchange_radius_;

@@ -24,6 +24,7 @@ class NDTD2DRegType:public registrationType{
 public:
   ~NDTD2DRegType();
   bool Register(MapTypePtr maptype, Eigen::Affine3d &Tnow, pcl::PointCloud<pcl::PointXYZ> &cloud);//This methods attempts to register the point cloud versus the map using Tmotion as a first guess
+  bool RegisterMap2Map(MapTypePtr map_prev,MapTypePtr map_next, Eigen::Affine3d &Tdiff,double match_score);
 protected:
   NDTD2DRegType(const Eigen::Affine3d &sensor_pose, RegParamPtr paramptr);
   double resolution_,resolutionLocalFactor_;

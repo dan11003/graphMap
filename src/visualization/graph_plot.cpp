@@ -38,7 +38,7 @@ void GraphPlot::PlotPoseGraph(GraphMapPtr graph){
 
   geometry_msgs::Pose pose;
 
-  for(int i=0;i<graph->MapSize();i++){
+  for(int i=0;i<graph->GraphSize();i++){
     Affine3d pose_tmp= graph->GetNodePose(i);
     tf::poseEigenToMsg(pose_tmp,pose);
     poseArr.poses.push_back(pose);

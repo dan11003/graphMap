@@ -41,6 +41,7 @@ add_definitions(${PCL_DEFINITIONS})
 
 set (${PROJECT_NAME}_LIB_SRCS
     src/graph_map/graph_map.cpp
+    src/graph_map/graph_map_navigator.cpp
     src/graph_map/map_node.cpp
     src/graph_map/map_type.cpp
     src/graph_map_fuser.cpp
@@ -53,6 +54,7 @@ set (${PROJECT_NAME}_LIB_SRCS
     src/lidarUtils/lidar_utilities.cpp
     src/template/template_map_type.cpp
     src/template/template_reg_type.cpp
+    src/graph_map/factor.cpp
     )
 add_library(${PROJECT_NAME} ${${PROJECT_NAME}_LIB_SRCS})
 add_executable(test_graph test/test_graph.cpp )

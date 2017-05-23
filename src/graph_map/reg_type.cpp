@@ -29,15 +29,13 @@ registrationType::registrationType(const Eigen::Affine3d &sensor_pose, RegParamP
 registrationType::~registrationType(){}
 
 
-
-
 /* -------Parameters---------------- */
 registrationParameters::registrationParameters(){
   GetParametersFromRos();
 }
 registrationParameters::~registrationParameters(){}
 void registrationParameters::GetParametersFromRos(){
-
+bool render_GT_map;
   ros::NodeHandle nh("~");//base class parameters
   cout<<"reading base class registration parameters"<<endl;
   nh.param("enable_registration",enableRegistration_,true);
@@ -47,9 +45,10 @@ void registrationParameters::GetParametersFromRos(){
   nh.param("size_z_meters",mapSizeZ_,0.8);
   nh.param("max_translation_norm",maxTranslationNorm_,0.4);
   nh.param("max_rotation_norm",maxRotationNorm_,M_PI/4);
+  nh.param("renderGTmap",render_GT_map,false);
 
-  // translationRegistrationDelta_; vad för värde?
-  // rotationRegistrationDelta_;
+  if(render_GT_map)
+    enableRegistration_=false;
 }
 
 

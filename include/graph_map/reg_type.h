@@ -13,6 +13,7 @@ public:
 
   virtual ~registrationType()=0;
   virtual bool Register(MapTypePtr maptype,Eigen::Affine3d &Tnow,pcl::PointCloud<pcl::PointXYZ> &cloud){}//This methods attempts to register the point cloud versus the map using the affine transformation guess "Tm"
+  virtual bool RegisterMap2Map(MapTypePtr map_prev,MapTypePtr map_next, Eigen::Affine3d &Tdiff,double match_score){}
 protected:
   bool enableRegistration_;
   bool registration2d_;

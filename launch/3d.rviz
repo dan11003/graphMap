@@ -101,6 +101,8 @@ Visualization Manager:
       Frame Timeout: 15
       Frames:
         All Enabled: false
+        base_laser_link:
+          Value: true
         fuser:
           Value: true
         odom_base_link:
@@ -123,6 +125,8 @@ Visualization Manager:
           odom_base_link:
             {}
           state_base_link:
+            base_laser_link:
+              {}
             velodyne:
               {}
       Update Interval: 0
@@ -195,7 +199,7 @@ Visualization Manager:
       Marker Topic: /graphInfo
       Name: MarkerArray
       Namespaces:
-        {}
+        graphInfo: true
       Queue Size: 100
       Value: true
     - Alpha: 1
@@ -252,16 +256,16 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 45.3371582
+      Distance: 26.8201447
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.0599999987
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 119.304512
-        Y: 141.762802
-        Z: -14.0173941
+        X: 14.6395636
+        Y: 2.38268185
+        Z: 10.3605547
       Focal Shape Fixed Size: false
       Focal Shape Size: 0.0500000007
       Name: Current View
