@@ -70,6 +70,22 @@ typedef boost::shared_ptr<ndtd2dRegParam> ndtd2dregParamPtr;
 class NDTD2DRegType;
 typedef boost::shared_ptr<NDTD2DRegType> ndtd2dregTypePtr;
 
+
+class NDTDL;
+typedef boost::shared_ptr<NDTDL> NDTDLMapTypePtr;
+
+class NDTDLMapParam;
+typedef boost::shared_ptr<NDTDLMapParam> NDTDLMapParamPtr;
+
+class NDTDLRegTypeParam;
+typedef boost::shared_ptr<NDTDLRegTypeParam> NDTDLRegTypeParamPtr;
+
+
+class NDTDLRegType;
+typedef boost::shared_ptr<NDTDLRegType> NDTDLRegTypePtr;
+
+
+
 class factor;
 typedef boost::shared_ptr<factor> FactorPtr;
 
@@ -104,22 +120,6 @@ typedef boost::shared_ptr<GraphMapNavigator> GraphMapNavigatorPtr;
 
 class GraphParam;
 typedef boost::shared_ptr<GraphParam> GraphParamPtr;
-
-class NDTDL;
-typedef boost::shared_ptr<NDTDL> NDTDLMapTypePtr;
-
-class NDTDLMapParam;
-typedef boost::shared_ptr<NDTDLMapParam> NDTDLMapParamPtr;
-
-class NDTDLRegTypeParam;
-typedef boost::shared_ptr<NDTDLRegTypeParam> NDTDLRegTypeParamPtr;
-
-class NDTDLRegType;
-typedef boost::shared_ptr<NDTDLRegType> NDTDLRegTypePtr;
-
-
-
-
 
 
 

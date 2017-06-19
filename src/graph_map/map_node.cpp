@@ -37,6 +37,7 @@ void MapNode::updateMap(const Eigen::Affine3d &Tnow,pcl::PointCloud<pcl::PointXY
   map_->update(Tnow,cloud);
   initialized_=true;
 }
+
 template<class Archive>
 void MapNode::serialize(Archive & ar, const unsigned int version){
   //ar &map_ & mapPose_ not sure how to do this

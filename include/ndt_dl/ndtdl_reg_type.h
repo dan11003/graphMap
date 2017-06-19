@@ -13,7 +13,7 @@
 #include "ros/node_handle.h"
 
 
-#define ndt_d2d_reg_type_name "ndt_d2d_reg"
+#define ndt_dl_reg_type_name "ndt_dl_reg"
 namespace libgraphMap{
 class NDTDLRegType:public registrationType{
 public:
@@ -27,18 +27,7 @@ private:
 };
 
 
-class NDTDLRegTypeParam:public registrationParameters{
-public:
-  ~NDTDLRegTypeParam();
-  void GetParametersFromRos();//Get parametes from ros e.g. from the ros parameter server
-  //but all your parameters here
-  string super_important_parameter_;
-protected:
-  NDTDLRegTypeParam();//Constructor is protected to allow only graphcatory to instanciate or derived classes create this type
-private:
-  friend class GraphFactory;
 
-};
 }
 
 

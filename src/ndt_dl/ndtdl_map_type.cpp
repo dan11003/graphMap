@@ -7,7 +7,7 @@ NDTDL::NDTDL( MapParamPtr paramptr) : MapType(paramptr){
   NDTDLMapParamPtr param = boost::dynamic_pointer_cast< NDTDLMapParam >(paramptr);//Should not be NULL
   if(param!=NULL){
     //Get parameters to this class from param
-    cout<<"templateMapType: created templateMapType"<<endl;
+    cout<<"ndtdl: created ndtdl map"<<endl;
   }
   else
     cerr<<"templateMapType: Cannot create instance for \"templateMapType\""<<std::endl;

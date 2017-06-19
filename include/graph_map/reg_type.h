@@ -8,6 +8,37 @@
 
 namespace libgraphMap{
 
+class registrationParameters{
+public:
+  virtual ~registrationParameters()=0;
+  virtual void GetParametersFromRos();
+  bool enableRegistration_;
+  bool registration2d_;
+  bool do_soft_constraints_;
+  bool checkConsistency_;
+  double maxTranslationNorm_,maxRotationNorm_;
+  double translationRegistrationDelta_, rotationRegistrationDelta_;
+  double sensorRange_;
+  double mapSizeZ_;
+ // lslgeneric::MotionModel2d motion_model_2d_;
+//  lslgeneric::MotionModel3d motion_model_3d_;
+protected:
+  registrationParameters();
+private:
+  friend class GraphFactory;
+};
+class NDTDLRegTypeParam:public registrationParameters{
+public:
+  ~NDTDLRegTypeParam();
+  void GetParametersFromRos();//Get parametes from ros e.g. from the ros parameter server
+  //but all your parameters here
+ string super_important_parameter_;
+protected:
+  NDTDLRegTypeParam();//Constructor is protected to allow only graphcatory to instanciate or derived classes create this type
+private:
+  friend class GraphFactory;
+
+};
 
 class registrationType{
 public:
@@ -33,26 +64,6 @@ private:
 };
 
 
-
-class registrationParameters{
-public:
-  virtual ~registrationParameters()=0;
-  virtual void GetParametersFromRos();
-  bool enableRegistration_;
-  bool registration2d_;
-  bool do_soft_constraints_;
-  bool checkConsistency_;
-  double maxTranslationNorm_,maxRotationNorm_;
-  double translationRegistrationDelta_, rotationRegistrationDelta_;
-  double sensorRange_;
-  double mapSizeZ_;
- // lslgeneric::MotionModel2d motion_model_2d_;
-//  lslgeneric::MotionModel3d motion_model_3d_;
-protected:
-  registrationParameters();
-private:
-  friend class GraphFactory;
-};
 
 
 

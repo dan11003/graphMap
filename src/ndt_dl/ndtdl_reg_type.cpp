@@ -36,17 +36,6 @@ bool NDTDLRegType::Register(MapTypePtr maptype, Eigen::Affine3d &Tnow, pcl::Poin
 
 
 
-/* ----------- Parameters ------------*/
-NDTDLRegTypeParam::~NDTDLRegTypeParam(){}
-NDTDLRegTypeParam::NDTDLRegTypeParam():registrationParameters(){
-  GetParametersFromRos();
-}
-void NDTDLRegTypeParam::GetParametersFromRos(){
-  ros::NodeHandle nh("~");//base class parameters
-  nh.param<std::string>("super_important_parameter",super_important_parameter_,"default string");
-
-}
-
 
 
 }//end namespace
