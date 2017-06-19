@@ -43,7 +43,7 @@ void GraphMapFuser::ProcessFrame(pcl::PointCloud<pcl::PointXYZ> &cloud, Eigen::A
       return;
     }
   }
-
+cout<<"fuser loop"<<endl;
   lslgeneric::transformPointCloudInPlace(Tnow, cloud);// The cloud should now be centered around the robot pose in the map frame
   Affine3d scanSourcePose=Tnow*sensorPose_;//calculate the source of the scan
   Graph_nav_->GetCurrentNode()->updateMap(scanSourcePose,cloud);//Update map
@@ -51,8 +51,9 @@ void GraphMapFuser::ProcessFrame(pcl::PointCloud<pcl::PointXYZ> &cloud, Eigen::A
   pose_last_fuse_=Tnow;
 
   //--------plot
-  NDT2DMapPtr curr_node = boost::dynamic_pointer_cast< NDTMapType >(Graph_nav_->GetCurrentNode()->GetMap());
-  GraphPlot::SendGlobalMapToRviz(curr_node->GetMap(),1,T_world_to_local_map.inverse());
+  //NDT2DMapPtr curr_node = boost::dynamic_pointer_cast< NDTMapType >(Graph_nav_->GetCurrentNode()->GetMap());
+//  GraphPlot::SendGlobalMapToRviz(curr_node->GetMap(),1,T_world_to_local_map.inverse());
+
   GraphPlot::PlotPoseGraph(Graph_nav_);
   //-------end of plot
   nr_frames_++;

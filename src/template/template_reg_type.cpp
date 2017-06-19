@@ -27,7 +27,9 @@ bool TemplateRegType::Register(MapTypePtr maptype, Eigen::Affine3d &Tnow, pcl::P
   else{
     TemplateMapTypePtr MapPtr = boost::dynamic_pointer_cast< TemplateMapType >(maptype);
     //Perform registration based on prediction "Tinit", your map "MapPtr" and the "cloud"
+    cout<<"please fill in code for registration- uintil then, registration is disabled"<<endl;
   }
+  return false;//remove this when registration code has been implemented
 
 }
 

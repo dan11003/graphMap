@@ -19,6 +19,9 @@ NDTDLRegType::~NDTDLRegType(){}
 
 bool NDTDLRegType::Register(MapTypePtr maptype, Eigen::Affine3d &Tnow, pcl::PointCloud<pcl::PointXYZ> &cloud, Matrix6d cov) {
 
+  cout<<"registration is disabled until it is implemented for map of type: "<<maptype->GetMapName()<<endl;
+  return true;//Remove when registration has been implemented
+
   if(!enableRegistration_||!maptype->Initialized()){
     cout<<"Registration disabled - motion based on odometry"<<endl;
 

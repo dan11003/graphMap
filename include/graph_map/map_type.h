@@ -64,6 +64,7 @@ public:
   virtual bool Initialized() const{return initialized_;}
   virtual void update(const Eigen::Affine3d &Tnow,pcl::PointCloud<pcl::PointXYZ> &cloud)=0;
   virtual bool CompoundMapsByRadius(MapTypePtr target,const Affine3d &T_source,const Affine3d &T_target, double radius=5);
+  virtual string GetMapName()const{return mapName_;}
 protected:
   MapType(MapParamPtr param);
   double radius_;

@@ -16,6 +16,7 @@ NDTDL::~NDTDL(){}
 
 void NDTDL::update(const Eigen::Affine3d &Tsensor,pcl::PointCloud<pcl::PointXYZ> &cloud){//update map, cloud is the scan, Tsensor is the pose where the scan was aquired.
 
+  cout<<"please implement map update for NDT-DL"<<endl;
   if(initialized_){
     //Initialize map
   }else{
@@ -26,6 +27,8 @@ void NDTDL::update(const Eigen::Affine3d &Tsensor,pcl::PointCloud<pcl::PointXYZ>
 
 bool NDTDL::CompoundMapsByRadius(MapTypePtr target,const Affine3d &T_source,const Affine3d &T_target, double radius){
 
+  return true;
+  cout<<"please implement map compound for improved usage of submaps"<<endl;
   if( NDTDLMapTypePtr targetPtr=boost::dynamic_pointer_cast<NDTDL>(target) ){
 
     cout<<"\"CompoundMapsByRadius\" not overrided by template but not implemented"<<endl;

@@ -25,7 +25,8 @@ void TemplateMapType::update(const Eigen::Affine3d &Tsensor,pcl::PointCloud<pcl:
 }
 
 bool TemplateMapType::CompoundMapsByRadius(MapTypePtr target,const Affine3d &T_source,const Affine3d &T_target, double radius){
-
+  cout<<"please implement map compound for improved usage of submaps"<<endl;
+  return true;//remove this
   if( TemplateMapTypePtr targetPtr=boost::dynamic_pointer_cast<TemplateMapType>(target) ){
 
     cout<<"\"CompoundMapsByRadius\" not overrided by template but not implemented"<<endl;

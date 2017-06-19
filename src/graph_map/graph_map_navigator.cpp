@@ -48,7 +48,7 @@ bool GraphMapNavigator::AutomaticMapInterchange(Affine3d &Tnow, const Matrix6d &
       else{
         cout<<"No node was found, will create a new map pose."<<endl;
         prevNode_=currentNode_;
-        NDT2DMapPtr prev_ndt_map = boost::dynamic_pointer_cast< NDTMapType >(prevNode_->GetMap());
+        //NDT2DMapPtr prev_ndt_map = boost::dynamic_pointer_cast< NDTMapType >(prevNode_->GetMap());
         AddMapNode(mapparam_,T_world_to_local_map*Tnow,cov_incr); //if no node already exists, create a new node
         prevNode_->GetMap()->CompoundMapsByRadius(currentNode_->GetMap(),prevNode_->GetPose(),currentNode_->GetPose(),compound_radius_);
         created_map_node=true;

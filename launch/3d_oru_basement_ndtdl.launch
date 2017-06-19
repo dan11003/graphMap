@@ -15,7 +15,7 @@
       <param name="registration_type" value="ndt_dl_reg" />
 
       <param name="use_submap" value="true" />
-      <param name="interchange_radius" value="4" />
+      <param name="interchange_radius" value="1" />
       <param name="compound_radius" value="2" />
 
       <param name="enable_registration" value="true" />
