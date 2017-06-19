@@ -27,7 +27,7 @@ public:
   NDTMapType(MapParamPtr paramptr);
   NDTMap *map_;
 
-private:
+protected:
   double resolution_,resolution_local_factor=1.;
   double sensor_range_;
   bool enable_mapping_=true;

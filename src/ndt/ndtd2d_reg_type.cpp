@@ -20,7 +20,7 @@ NDTD2DRegType::NDTD2DRegType(const Affine3d &sensor_pose, RegParamPtr paramptr):
 
 NDTD2DRegType::~NDTD2DRegType(){}
 
-bool NDTD2DRegType::Register(MapTypePtr maptype,Eigen::Affine3d &Tnow,pcl::PointCloud<pcl::PointXYZ> &cloud) {
+bool NDTD2DRegType::Register(MapTypePtr maptype,Eigen::Affine3d &Tnow,pcl::PointCloud<pcl::PointXYZ> &cloud,Matrix6d cov) {
 
   if(!enableRegistration_||!maptype->Initialized()){
     cout<<"Registration disabled - motion based on odometry"<<endl;
@@ -47,7 +47,7 @@ bool NDTD2DRegType::Register(MapTypePtr maptype,Eigen::Affine3d &Tnow,pcl::Point
     matchSuccesfull=matcher3D_.match( *globalMap, ndlocal,Tinit,true);
   }
 
-  if(matchSuccesfull){
+  if(matchSuccesfull){//if succesfull match, make sure the registration is consistent
     Eigen::Affine3d diff = Tnow.inverse()*Tinit;//difference between prediction and registration
     Vector3d diff_angles=Vector3d(diff.rotation().eulerAngles(0,1,2));
     Eigen::AngleAxisd diff_rotation_(diff.rotation());

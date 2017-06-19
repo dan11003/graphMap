@@ -1,4 +1,3 @@
-
 cmake_minimum_required(VERSION 2.8.3)
 project(graph_map)
 set (CMAKE_CXX_STANDARD 11)
@@ -29,7 +28,7 @@ find_package(Eigen REQUIRED COMPONENTS)
 
 catkin_package(
     DEPENDS Eigen libpcl-all-dev
-    CATKIN_DEPENDS ndt_registration ndt_map roscpp   laser_geometry sensor_msgs
+    CATKIN_DEPENDS ndt_registration ndt_map roscpp laser_geometry sensor_msgs
     INCLUDE_DIRS include
     LIBRARIES ${PROJECT_NAME}
     )

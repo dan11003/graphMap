@@ -9,7 +9,7 @@
 #include "boost/shared_ptr.hpp"
 #include "Eigen/Dense"
 #include <stdint.h>
-#include<Eigen/StdVector>
+#include <Eigen/StdVector>
 #include "visualization/graph_plot.h"
 #include "ndt_map/ndt_map.h"
 #include "ndt/ndt_map_type.h"

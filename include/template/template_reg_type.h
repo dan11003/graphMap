@@ -18,7 +18,7 @@ namespace libgraphMap{
 class TemplateRegType:public registrationType{
 public:
   ~TemplateRegType();
-  bool Register(MapTypePtr maptype, Eigen::Affine3d &Tnow, pcl::PointCloud<pcl::PointXYZ> &cloud);//This methods attempts to register the point cloud versus the map using Tmotion as a first guess
+  bool Register(MapTypePtr maptype, Eigen::Affine3d &Tnow, pcl::PointCloud<pcl::PointXYZ> &cloud, Matrix6d covar=unit_covar);//This methods attempts to register the point cloud versus the map using Tmotion as a first guess
 protected:
   string super_important_parameter_;
   TemplateRegType(const Affine3d &sensor_pose,RegParamPtr paramptr);

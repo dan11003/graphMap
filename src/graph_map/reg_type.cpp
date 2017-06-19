@@ -19,6 +19,7 @@ registrationType::registrationType(const Eigen::Affine3d &sensor_pose, RegParamP
   rotationRegistrationDelta_=regparam->rotationRegistrationDelta_;
   sensorRange_        =regparam->sensorRange_;
   mapSizeZ_           =regparam->mapSizeZ_;
+  do_soft_constraints_=regparam->do_soft_constraints_;
   failed_registrations_=0;
   succesfull_registrations_=0;
   cout<<"sucessfully applied registration parameters"<<endl;
@@ -46,7 +47,15 @@ bool render_GT_map;
   nh.param("max_translation_norm",maxTranslationNorm_,0.4);
   nh.param("max_rotation_norm",maxRotationNorm_,M_PI/4);
   nh.param("renderGTmap",render_GT_map,false);
-
+  nh.param("do_soft_constraints",do_soft_constraints_,false);
+/*
+  nh.param<double>("motion_params_Cd", motion_model_2d_.params.Cd, 0.005);
+  nh.param<double>("motion_params_Ct", motion_model_2d_.params.Ct, 0.01);
+  nh.param<double>("motion_params_Dd", motion_model_2d_.params.Dd, 0.001);
+  nh.param<double>("motion_params_Dt", motion_model_2d_.params.Dt, 0.01);
+  nh.param<double>("motion_params_Td", motion_model_2d_.params.Td, 0.001);
+  nh.param<double>("motion_params_Tt", motion_model_2d_.params.Tt, 0.005);
+*/
   if(render_GT_map)
     enableRegistration_=false;
 }

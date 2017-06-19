@@ -9,7 +9,7 @@ GraphMapFuser::GraphMapFuser(string maptype, string registratorType, Eigen::Affi
   regParam_=GraphFactory::CreateRegParam(registratorType);
   registrator_=GraphFactory::CreateRegistrationType(sensorPose,regParam_);
   sensorPose_=sensorPose;
-  frameNr_=0;
+  nr_frames_=0;
 }
 
 /*!
@@ -17,16 +17,18 @@ GraphMapFuser::GraphMapFuser(string maptype, string registratorType, Eigen::Affi
  * \param cloud frame: lidar
  * \param Tnow frame: world
  */
-void GraphMapFuser::ProcessFrame(pcl::PointCloud<pcl::PointXYZ> &cloud, Eigen::Affine3d &Tnow){
-  //in sensor frame
+void GraphMapFuser::ProcessFrame(pcl::PointCloud<pcl::PointXYZ> &cloud, Eigen::Affine3d &Tnow, const Eigen::Affine3d &Tmotion){
+
   bool map_node_changed=false,map_node_created,registration_succesfull=false;
+  //Tnow=Tnow*Tmotion;
   Eigen::Affine3d T_world_to_local_map=Graph_nav_->GetCurrentNodePose().inverse(); //transformation from node to world frame
   Tnow=T_world_to_local_map*Tnow;//change frame to local map
   //cout<<"New frame:global Tnow=\n"<<(T_world_to_local_map.inverse()*Tnow).translation() <<endl;
-  if(frameNr_>=0){
+  if(nr_frames_>=0){
+    Matrix6d motion_cov=motion_model_2d_.getCovMatrix6(Tmotion, 1., 1., 1.);
     lslgeneric::transformPointCloudInPlace(sensorPose_, cloud);//Transform cloud into robot frame before registrating
-    registration_succesfull= registrator_->Register(Graph_nav_->GetCurrentNode()->GetMap(),Tnow,cloud);//Tnow will be updated to the actual pose of the robot according to ndt-d2d registration
-    if(Graph_nav_->AutomaticMapInterchange(Tnow,unit_covar,T_world_to_local_map,map_node_changed,map_node_created) && map_node_changed)
+    registration_succesfull = registrator_->Register(Graph_nav_->GetCurrentNode()->GetMap(),Tnow,cloud,motion_cov);//Tnow will be updated to the actual pose of the robot according to ndt-d2d registration
+    if(Graph_nav_->AutomaticMapInterchange(Tnow,motion_cov,T_world_to_local_map,map_node_changed,map_node_created) && map_node_changed)
     {
       //double score;
       //Affine3d Tdiff=Graph_nav_->GetPreviousNodePose().inverse()*Graph_nav_->GetCurrentNodePose();
@@ -35,26 +37,25 @@ void GraphMapFuser::ProcessFrame(pcl::PointCloud<pcl::PointXYZ> &cloud, Eigen::A
       //registrator_->RegisterMap2Map(Graph_nav_->GetPreviousNode()->GetMap(),Graph_nav_->GetCurrentNode()->GetMap(),Tdiff,score);
       //Graph_nav_->AddFactor(Graph_nav_->GetPreviousNode(),Graph_nav_->GetCurrentNode(),Tdiff,unit_covar);
     }
-  }
-  if(!registration_succesfull){
-    Tnow=T_world_to_local_map.inverse()*Tnow;//remap Tnow to global map frame
-    return;
+    if(!registration_succesfull){
+      Tnow=T_world_to_local_map.inverse()*Tnow;//remap Tnow to global map frame
+      cerr<<"REGISTRATION ERROR"<<endl;
+      return;
+    }
   }
 
   lslgeneric::transformPointCloudInPlace(Tnow, cloud);// The cloud should now be centered around the robot pose in the map frame
-  Eigen::Affine3d scanSourcePose=Tnow*sensorPose_;//calculate the source of the scan
-  /*if(mapChange){
-    NDT2DMapPtr curr_node = boost::dynamic_pointer_cast< NDTMapType >(graph_->GetCurrentNode()->GetMap());
-    GraphPlot::SendGlobal2MapToRviz(curr_node->GetMap(),0,T_world_to_local_map.inverse());
-  }*/
+  Affine3d scanSourcePose=Tnow*sensorPose_;//calculate the source of the scan
   Graph_nav_->GetCurrentNode()->updateMap(scanSourcePose,cloud);//Update map
   Tnow=T_world_to_local_map.inverse()*Tnow;//remap Tnow to global map frame
+  pose_last_fuse_=Tnow;
+
   //--------plot
   NDT2DMapPtr curr_node = boost::dynamic_pointer_cast< NDTMapType >(Graph_nav_->GetCurrentNode()->GetMap());
   GraphPlot::SendGlobalMapToRviz(curr_node->GetMap(),1,T_world_to_local_map.inverse());
   GraphPlot::PlotPoseGraph(Graph_nav_);
-  //-------end of plo
-  frameNr_++;
+  //-------end of plot
+  nr_frames_++;
 }
 void GraphMapFuser::plotGTCloud(pcl::PointCloud<pcl::PointXYZ> &cloud){
   lslgeneric::NDTMap ndlocal(new lslgeneric::LazyGrid(0.4));
@@ -74,5 +75,8 @@ bool GraphMapFuser::ErrorStatus(string status){
     status="No object instance found for graph or registrator";
     return true;
   }
+}
+void GetCovarianceFromMotion(Matrix6d &cov,const Affine3d &Tm){
+
 }
 }

@@ -101,8 +101,6 @@ Visualization Manager:
       Frame Timeout: 15
       Frames:
         All Enabled: false
-        base_laser_link:
-          Value: true
         fuser:
           Value: true
         odom_base_link:
@@ -125,8 +123,6 @@ Visualization Manager:
           odom_base_link:
             {}
           state_base_link:
-            base_laser_link:
-              {}
             velodyne:
               {}
       Update Interval: 0
@@ -144,7 +140,7 @@ Visualization Manager:
       Marker Topic: /NDTglobalMap
       Name: MarkerArray
       Namespaces:
-        {}
+        current: true
       Queue Size: 1000
       Value: true
     - Alpha: 1
@@ -256,22 +252,22 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 26.8201447
+      Distance: 20.1210861
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.0599999987
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 14.6395636
-        Y: 2.38268185
-        Z: 10.3605547
+        X: -4.0259552
+        Y: -1.68693542
+        Z: -14.0227928
       Focal Shape Fixed Size: false
       Focal Shape Size: 0.0500000007
       Name: Current View
       Near Clip Distance: 0.00999999978
       Pitch: 1.28979659
-      Target Frame: world
+      Target Frame: fuser
       Value: Orbit (rviz)
       Yaw: 6.14493847
     Saved:

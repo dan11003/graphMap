@@ -17,7 +17,7 @@ TemplateRegType::TemplateRegType(const Affine3d &sensor_pose,RegParamPtr parampt
 
 TemplateRegType::~TemplateRegType(){}
 
-bool TemplateRegType::Register(MapTypePtr maptype,Eigen::Affine3d &Tnow,pcl::PointCloud<pcl::PointXYZ> &cloud) {
+bool TemplateRegType::Register(MapTypePtr maptype, Eigen::Affine3d &Tnow, pcl::PointCloud<pcl::PointXYZ> &cloud, Matrix6d cov) {
 
   if(!enableRegistration_||!maptype->Initialized()){
     cout<<"Registration disabled - motion based on odometry"<<endl;
