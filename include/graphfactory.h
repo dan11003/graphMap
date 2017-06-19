@@ -105,6 +105,20 @@ typedef boost::shared_ptr<GraphMapNavigator> GraphMapNavigatorPtr;
 class GraphParam;
 typedef boost::shared_ptr<GraphParam> GraphParamPtr;
 
+class NDTDL;
+typedef boost::shared_ptr<NDTDL> NDTDLMapTypePtr;
+
+class NDTDLMapParam;
+typedef boost::shared_ptr<NDTDLMapParam> NDTDLMapParamPtr;
+
+class NDTDLRegTypeParam;
+typedef boost::shared_ptr<NDTDLRegTypeParam> NDTDLRegTypeParamPtr;
+
+class NDTDLRegType;
+typedef boost::shared_ptr<NDTDLRegType> NDTDLRegTypePtr;
+
+
+
 
 
 
