@@ -4,9 +4,7 @@ namespace libgraphMap{
 
 MapParam::~MapParam(){}
 
-MapParam::MapParam(){
-  GetParametersFromRos();
-}
+MapParam::MapParam(){}
 void MapParam::GetParametersFromRos(){
   ros::NodeHandle nh("~");//base class parameters
   nh.param("sensor_range",max_range_,30.);

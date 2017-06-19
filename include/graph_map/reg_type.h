@@ -27,18 +27,6 @@ protected:
 private:
   friend class GraphFactory;
 };
-class NDTDLRegTypeParam:public registrationParameters{
-public:
-  ~NDTDLRegTypeParam();
-  void GetParametersFromRos();//Get parametes from ros e.g. from the ros parameter server
-  //but all your parameters here
- string super_important_parameter_;
-protected:
-  NDTDLRegTypeParam();//Constructor is protected to allow only graphcatory to instanciate or derived classes create this type
-private:
-  friend class GraphFactory;
-
-};
 
 class registrationType{
 public:
@@ -46,7 +34,6 @@ public:
   virtual ~registrationType()=0;
   virtual bool Register(MapTypePtr maptype,Eigen::Affine3d &Tnow,pcl::PointCloud<pcl::PointXYZ> &cloud,Matrix6d covar=unit_covar){}//This methods attempts to register the point cloud versus the map using the affine transformation guess "Tm"
   virtual bool RegisterMap2Map(MapTypePtr map_prev,MapTypePtr map_next, Eigen::Affine3d &Tdiff,double match_score){}
-protected:
   bool enableRegistration_;
   bool registration2d_;
   bool do_soft_constraints_;
@@ -57,8 +44,9 @@ protected:
   double mapSizeZ_;
   unsigned int  failed_registrations_;
   unsigned int  succesfull_registrations_;
-  registrationType(const Affine3d &sensor_pose,RegParamPtr regparam);
   Eigen::Affine3d sensorPose_;//Translation between robot and sensor frame
+protected:
+  registrationType(const Affine3d &sensor_pose,RegParamPtr regparam);
 private:
   friend class GraphFactory;
 };

@@ -41,9 +41,9 @@ bool TemplateRegType::Register(MapTypePtr maptype, Eigen::Affine3d &Tnow, pcl::P
 /* ----------- Parameters ------------*/
 TemplateRegTypeParam::~TemplateRegTypeParam(){}
 TemplateRegTypeParam::TemplateRegTypeParam():registrationParameters(){
-  GetParametersFromRos();
 }
 void TemplateRegTypeParam::GetParametersFromRos(){
+  registrationParameters::GetParametersFromRos();
   ros::NodeHandle nh("~");//base class parameters
   nh.param<std::string>("super_important_parameter",super_important_parameter_,"default string");
 

@@ -16,20 +16,9 @@ namespace libgraphMap{
 class NDTMapParam : public MapParam{
 public:
   ~NDTMapParam(){}
-  /*void SetParam(double resolution,
-                         float cenx,
-                          float ceny,
-                           float cenz,
-                            float sizex,
-                             float sizey,
-                              float sizez,
-                               double max_range,
-                                std::string directory,
-                                 bool _saveOnDelete);*/
   void GetParametersFromRos();
 
   double resolution_;
-
   std::string directory_;
   bool saveOnDelete_, match2D_,beHMT,matchLaser;
 protected:

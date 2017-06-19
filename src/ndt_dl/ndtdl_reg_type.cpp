@@ -3,6 +3,16 @@
 
 namespace libgraphMap{
 
+/* ----------- Parameters ------------*/
+NDTDLRegTypeParam::~NDTDLRegTypeParam(){}
+NDTDLRegTypeParam::NDTDLRegTypeParam():registrationParameters(){}
+void NDTDLRegTypeParam::GetParametersFromRos(){
+  registrationParameters::GetParametersFromRos();
+  ros::NodeHandle nh("~");//base class parameters
+  nh.param<std::string>("super_important_parameter",super_important_parameter_,"default string");
+}
+
+
 
 NDTDLRegType::NDTDLRegType(const Affine3d &sensor_pose,RegParamPtr paramptr):registrationType(sensor_pose,paramptr){
 

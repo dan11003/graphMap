@@ -37,14 +37,9 @@ bool NDTDL::CompoundMapsByRadius(MapTypePtr target,const Affine3d &T_source,cons
 
 
 
-
-
-NDTDLMapParam::NDTDLMapParam(){
-  GetParametersFromRos();
-}
-
-
+NDTDLMapParam::NDTDLMapParam(){}
 void NDTDLMapParam::GetParametersFromRos(){
+  MapParam::GetParametersFromRos();
   ros::NodeHandle nh("~");
   cout<<"reading parameters from ros inside GetRosParamNDT2D"<<endl;
   nh.param<std::string>("Super_important_map_parameter",SuperImportantMapParameter,"parhaps not so important...");

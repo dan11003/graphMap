@@ -71,9 +71,7 @@ void GraphMap::AddFactor(MapNodePtr prev, MapNodePtr next,Affine3d Tdiff,Matrix6
  factors_.push_back(GraphFactory::CreateMapNodeFactor(prev,next,Tdiff,cov));
 }
 
-GraphParam::GraphParam(){
-  GetParametersFromRos();
-}
+GraphParam::GraphParam(){}
 void GraphParam::GetParametersFromRos(){
   ros::NodeHandle nh("~");
   nh.param("use_submap",use_submap_,false);

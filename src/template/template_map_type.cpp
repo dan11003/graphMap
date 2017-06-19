@@ -37,12 +37,11 @@ bool TemplateMapType::CompoundMapsByRadius(MapTypePtr target,const Affine3d &T_s
 
 
 
-TemplateMapParam::TemplateMapParam(){
-  GetParametersFromRos();
-}
+TemplateMapParam::TemplateMapParam(){}
 
 
 void TemplateMapParam::GetParametersFromRos(){
+  MapParam::GetParametersFromRos();
   ros::NodeHandle nh("~");
   cout<<"reading parameters from ros inside GetRosParamNDT2D"<<endl;
   nh.param<std::string>("Super_important_map_parameter",SuperImportantMapParameter,"parhaps not so important...");

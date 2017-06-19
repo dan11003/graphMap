@@ -282,7 +282,7 @@ public:
       (void)ResetInvalidMotion(Tmotion);
       pose_=pose_*Tmotion; //currently being changed to increment pose inside fuser
       cout<<"frame="<<frame_nr_<<"movement="<<(fuser_->GetPoseLastFuse().inverse()*pose_).translation().norm()<<endl;
-      if((fuser_->GetPoseLastFuse().inverse()*pose_).translation().norm()>0.5 || fuser_->FramesProcessed()==0){
+      if((fuser_->GetPoseLastFuse().inverse()*pose_).translation().norm()>=0.0 || fuser_->FramesProcessed()==0){
         cout<<"perform update"<<endl;
         fuser_->ProcessFrame(cloud,pose_,Tmotion);
       }

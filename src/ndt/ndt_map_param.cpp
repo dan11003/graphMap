@@ -2,12 +2,10 @@
 using namespace std;
 namespace libgraphMap{
 
-NDTMapParam::NDTMapParam(){
-  GetParametersFromRos();
-}
-
+NDTMapParam::NDTMapParam(){}
 
 void NDTMapParam::GetParametersFromRos(){
+  MapParam::GetParametersFromRos();
   ros::NodeHandle nh("~");
   cout<<"reading parameters from ros inside GetRosParamNDT2D"<<endl;
   nh.param("resolution",resolution_,1.0);

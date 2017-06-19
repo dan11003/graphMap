@@ -27,6 +27,7 @@ class MapParam{
 public:
   virtual ~MapParam()=0;
   string getMapName() const{return mapName_;}
+  virtual void GetParametersFromRos();
   virtual string ToString();
   double radius_;
   double sizex_;
@@ -36,7 +37,6 @@ public:
   double min_range_;
   bool enable_mapping_;
 protected:
-  virtual void GetParametersFromRos();
   MapParam();
   string mapName_;
   /*-----Boost serialization------*/

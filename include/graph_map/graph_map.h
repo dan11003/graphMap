@@ -59,12 +59,12 @@ private:
 
 class GraphParam{
 public:
+  void GetParametersFromRos();
   bool use_submap_;
   double interchange_radius_;
   double compound_radius_;
 protected:
   GraphParam();
-  void GetParametersFromRos();
 private:
   friend class GraphFactory;
 };

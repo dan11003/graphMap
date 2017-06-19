@@ -22,7 +22,8 @@ using lslgeneric::MotionModel2d;
 using Eigen::Affine3d;
 class GraphMapFuser{
 public:
-  GraphMapFuser(string maptype, string registratorType,Affine3d initPose,const Affine3d &sensorPose);
+  GraphMapFuser(string maptype, string registratorType,Affine3d initPose,const Affine3d &sensorPose);//Ros friendly constructor to read parameters from ros-par-server
+  GraphMapFuser(  RegParamPtr regParam,  MapParamPtr mapParam, GraphParamPtr graph_param, Eigen::Affine3d initPose, const Eigen::Affine3d &sensorPose);
   virtual void SetMotionParameters(const MotionModel2d &motion_param){motion_model_2d_=motion_param;}
   virtual void ProcessFrame(pcl::PointCloud<pcl::PointXYZ> &cloud, Eigen::Affine3d &Tnow, const Eigen::Affine3d &Tmotion); //cloud is the current scan in robot frame,  Tnow is the current pose in world frame
   virtual bool ErrorStatus(string status="");
@@ -42,6 +43,7 @@ protected:
   unsigned int nr_frames_;
   pcl::PointCloud<pcl::PointXYZ> cloud;
   MotionModel2d motion_model_2d_;
+  bool initialized_=false;
 
 };
 

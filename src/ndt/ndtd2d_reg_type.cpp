@@ -93,12 +93,11 @@ bool NDTD2DRegType::RegisterMap2Map(MapTypePtr map_prev,MapTypePtr map_next, Eig
 
 /* ----------- Parameters ------------*/
 ndtd2dRegParam::~ndtd2dRegParam(){}
-ndtd2dRegParam::ndtd2dRegParam():registrationParameters(){
-  GetParametersFromRos();
-}
+ndtd2dRegParam::ndtd2dRegParam():registrationParameters(){}
 void ndtd2dRegParam::GetParametersFromRos(){
+  registrationParameters::GetParametersFromRos();
+  cout<<"derived class read from ros"<<endl;
   ros::NodeHandle nh("~");//base class parameters
-  nh.param("registration_2D",registration2d_,true);
   nh.param("resolution",resolution_,1.0);
   nh.param("resolutionLocalFactor",resolutionLocalFactor_,1.0);
 }

@@ -2,14 +2,30 @@
 namespace libgraphMap{
 using namespace std;
 GraphMapFuser::GraphMapFuser(string maptype, string registratorType, Eigen::Affine3d initPose, const Eigen::Affine3d &sensorPose){
-  registratorType_=registratorType;
-  mapParam_=GraphFactory::CreateMapParam(maptype);
   graph_param_=GraphFactory::CreateGraphParam();
-  Graph_nav_ =GraphFactory::CreateGraphNavigator(initPose,mapParam_,graph_param_);
+  graph_param_->GetParametersFromRos();
   regParam_=GraphFactory::CreateRegParam(registratorType);
+  cout<<"started reading reg par from ros"<<endl;
+  regParam_->GetParametersFromRos();
+  cout<<"finished reading reg par from ros"<<endl;
+  mapParam_=GraphFactory::CreateMapParam(maptype);
+  cout<<"started reading map par from ros"<<endl;
+  mapParam_->GetParametersFromRos();
+cout<<"time to create graph inside fuser"<<endl;
+  Graph_nav_ =GraphFactory::CreateGraphNavigator(initPose,mapParam_,graph_param_);
   registrator_=GraphFactory::CreateRegistrationType(sensorPose,regParam_);
   sensorPose_=sensorPose;
   nr_frames_=0;
+  initialized_=true;
+}
+GraphMapFuser::GraphMapFuser(  RegParamPtr regParam,  MapParamPtr mapParam, GraphParamPtr graph_param, Eigen::Affine3d initPose, const Eigen::Affine3d &sensorPose){
+  mapParam_=mapParam;
+  regParam_=regParam;
+  graph_param_=graph_param;
+  Graph_nav_ =GraphFactory::CreateGraphNavigator(initPose,mapParam_,graph_param_);
+  registrator_=GraphFactory::CreateRegistrationType(sensorPose,regParam_);
+  nr_frames_=0;
+  initialized_=true;
 }
 
 /*!
@@ -20,6 +36,10 @@ GraphMapFuser::GraphMapFuser(string maptype, string registratorType, Eigen::Affi
 void GraphMapFuser::ProcessFrame(pcl::PointCloud<pcl::PointXYZ> &cloud, Eigen::Affine3d &Tnow, const Eigen::Affine3d &Tmotion){
 
   bool map_node_changed=false,map_node_created,registration_succesfull=false;
+  if(!initialized_){
+   cerr<<"fuser not initialized"<<endl;
+    return;
+  }
   //Tnow=Tnow*Tmotion;
   Eigen::Affine3d T_world_to_local_map=Graph_nav_->GetCurrentNodePose().inverse(); //transformation from node to world frame
   Tnow=T_world_to_local_map*Tnow;//change frame to local map

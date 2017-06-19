@@ -26,7 +26,7 @@ MapParamPtr GraphFactory::CreateMapParam(string mapname){
     NDT2DMapParamPtr paramPtr(new NDTMapParam());
     return paramPtr;
   }
-  if(mapname.compare(ndtdl_map_type_name)==0){
+  else if(mapname.compare(ndtdl_map_type_name)==0){
     cout<<"Graphfactory: Created parameters for map type: \""<<ndtdl_map_type_name<<"\""<<endl;
     NDTDLMapParamPtr paramPtr(new NDTDLMapParam());
     return paramPtr;
@@ -110,7 +110,7 @@ RegTypePtr GraphFactory::CreateRegistrationType(const Affine3d &sensor_pose,RegP
   return NULL;
 }
 RegParamPtr GraphFactory::CreateRegParam(string regType){
-  if(regType.compare(ndt_map_type_name)==0){
+  if(regType.compare(ndt_d2d_reg_type_name)==0){
     cout<<"Graphfactory: Creating parameters for registration type: \""<<ndt_d2d_reg_type_name<<"\""<<endl;
     return RegParamPtr(new ndtd2dRegParam());
   }

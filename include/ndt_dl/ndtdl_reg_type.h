@@ -15,6 +15,20 @@
 
 #define ndt_dl_reg_type_name "ndt_dl_reg"
 namespace libgraphMap{
+
+class NDTDLRegTypeParam:public registrationParameters{
+public:
+  ~NDTDLRegTypeParam();
+  void GetParametersFromRos();//Get parametes from ros e.g. from the ros parameter server
+  //but all your parameters here
+ string super_important_parameter_;
+protected:
+  NDTDLRegTypeParam();//Constructor is protected to allow only graphcatory to instanciate or derived classes create this type
+private:
+  friend class GraphFactory;
+
+};
+
 class NDTDLRegType:public registrationType{
 public:
   ~NDTDLRegType();
