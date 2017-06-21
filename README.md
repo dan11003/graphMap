@@ -1,7 +1,7 @@
 # graphMap
 A library for mapping based on graph convention and nodes containing local maps.
 
-Depends on Eigen, ros and oru perception
+Depends on Eigen, ros and oru perception. The package has to be built inside oru_perception workspace
 
 
 
