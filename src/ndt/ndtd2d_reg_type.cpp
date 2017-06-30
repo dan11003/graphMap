@@ -4,7 +4,7 @@ namespace libgraphMap{
 
 NDTD2DRegType::NDTD2DRegType(const Affine3d &sensor_pose, RegParamPtr paramptr):registrationType(sensor_pose,paramptr){
 
-  ndtd2dregParamPtr param_ptr = boost::dynamic_pointer_cast< ndtd2dRegParam >(paramptr);//Should not be NULL
+  NDTD2DRegParamPtr param_ptr = boost::dynamic_pointer_cast< NDTD2DRegParam >(paramptr);//Should not be NULL
   if(param_ptr!=NULL){
     resolution_=param_ptr->resolution_;
     resolutionLocalFactor_=param_ptr->resolutionLocalFactor_;
@@ -36,7 +36,7 @@ bool NDTD2DRegType::Register(MapTypePtr maptype,Eigen::Affine3d &Tnow,pcl::Point
   //graphPlot::SendLocalMapToRviz(ptrmap,0,sensorPose_);
 
   //Get ndt map pointer
-  NDT2DMapPtr MapPtr = boost::dynamic_pointer_cast< NDTMapType >(maptype);
+  NDTMapPtr MapPtr = boost::dynamic_pointer_cast< NDTMapType >(maptype);
   NDTMap *globalMap=MapPtr->GetMap();
   // cout<<"number of cell in (global/local) map"<<globalMap->getAllCells().size()<<","<<ndlocal.getAllCells().size()<<endl;
   bool matchSuccesfull;
@@ -92,9 +92,9 @@ bool NDTD2DRegType::RegisterMap2Map(MapTypePtr map_prev,MapTypePtr map_next, Eig
 }
 
 /* ----------- Parameters ------------*/
-ndtd2dRegParam::~ndtd2dRegParam(){}
-ndtd2dRegParam::ndtd2dRegParam():registrationParameters(){}
-void ndtd2dRegParam::GetParametersFromRos(){
+NDTD2DRegParam::~NDTD2DRegParam(){}
+NDTD2DRegParam::NDTD2DRegParam():registrationParameters(){}
+void NDTD2DRegParam::GetParametersFromRos(){
   registrationParameters::GetParametersFromRos();
   cout<<"derived class read from ros"<<endl;
   ros::NodeHandle nh("~");//base class parameters

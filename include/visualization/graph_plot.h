@@ -8,7 +8,7 @@
 #include "ndt_map/ndt_map.h"
 #include "geometry_msgs/PoseArray.h"
 #include "eigen_conversions/eigen_msg.h"
-
+#include "graph_map/graph_map.h"
 #define NDT_GLOBAL_MAP_TOPIC "NDTglobalMap"
 #define NDT_GLOBAL2_MAP_TOPIC "NDTglobal2Map"
 #define NDT_LOCAL_MAP_TOPIC  "NDTlocalMap"

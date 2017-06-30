@@ -35,18 +35,18 @@ private:
 };
 
 
-class ndtd2dRegParam:public registrationParameters{
+class NDTD2DRegParam:public registrationParameters{
 public:
-  ~ndtd2dRegParam();
+  ~NDTD2DRegParam();
   void GetParametersFromRos();
   double resolution_=0.4, resolutionLocalFactor_=1.0;
   //Matcher
   int  matcher2D_ITR_MAX = 30;
   bool matcher2D_step_control=true;
   int  matcher2D_n_neighbours=2;
-
+NDTD2DRegParam();
 protected:
-  ndtd2dRegParam();
+
 private:
   friend class GraphFactory;
 

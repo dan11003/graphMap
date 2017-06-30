@@ -10,7 +10,7 @@
 #include "ros/node_handle.h"
 
 
-#define ndt_map_type_name "ndt_2d_map"
+#define template_map_name "template"
 namespace libgraphMap{
 
 class TemplateMapType:public MapType{

@@ -30,7 +30,7 @@ bool Node::WithinRadius(const Affine3d &pose, const double &radius){
 
 MapNode::MapNode(const Eigen::Affine3d &pose,const MapParamPtr &mapparam){
   pose_=pose;
-  map_=GraphFactory::CreateMap(mapparam);
+  map_=GraphFactory::CreateMapType(mapparam);
 }
 
 void MapNode::updateMap(const Eigen::Affine3d &Tnow,pcl::PointCloud<pcl::PointXYZ> &cloud){

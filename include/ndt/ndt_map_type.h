@@ -13,7 +13,7 @@
 #include "visualization/graph_plot.h"
 #include <ndt_map/pointcloud_utils.h>
 //#include <ndt_fuser/motion_model_2d.h>
-#define ndt_map_type_name "ndt_2d_map"
+#define ndt_map_type_name "ndt_map"
 namespace libgraphMap{
 using namespace lslgeneric;
 
@@ -30,7 +30,7 @@ public:
 protected:
   double resolution_,resolution_local_factor=1.;
   double sensor_range_;
-  bool enable_mapping_=true;
+
   friend class GraphFactory;
   void InitializeMap(const Eigen::Affine3d &Td,pcl::PointCloud<pcl::PointXYZ> &cloud);
 

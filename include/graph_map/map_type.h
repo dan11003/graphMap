@@ -29,7 +29,6 @@ public:
   string getMapName() const{return mapName_;}
   virtual void GetParametersFromRos();
   virtual string ToString();
-  double radius_;
   double sizex_;
   double sizey_;
   double sizez_;
@@ -67,14 +66,16 @@ public:
   virtual string GetMapName()const{return mapName_;}
 protected:
   MapType(MapParamPtr param);
-  double radius_;
+  //double radius_;
   double sizex_;
   double sizey_;
   double sizez_;
   double max_range_;
   double min_range_;
   bool initialized_;
+  bool enable_mapping_=true;
   string mapName_;
+
 
   /*-----Boost serialization------*/
   friend class boost::serialization::access;
@@ -83,6 +84,7 @@ protected:
     ar & sizex_ & sizey_ & sizez_;
     ar & max_range_ & max_range_;
     ar & initialized_;
+    ar & mapName_;
   }
   /*-----End of Boost serialization------*/
 };

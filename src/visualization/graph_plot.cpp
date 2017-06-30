@@ -1,5 +1,5 @@
 #include "visualization/graph_plot.h"
-#include "graph_map/graph_map.h"
+
 
 namespace libgraphMap{
 bool GraphPlot::initialized_=false;
@@ -225,7 +225,7 @@ void GraphPlot::SendLocalMapToRviz(lslgeneric::NDTMap *mapPtr,int color,const Af
   if(!initialized_)
     Initialize();
   GetAllCellsMeanCov(mapPtr,cov,mean);
-  sendMapToRviz(mean,cov,localMapPublisher_,"state_base_link",color,offset,"local");
+  sendMapToRviz(mean,cov,localMapPublisher_,"/velodyne",color,offset,"local");
 }
 void GraphPlot::GetAllCellsMeanCov(const lslgeneric::NDTMap *mapPtr,cov_vector &cov,mean_vector &mean){
   cov.clear();
@@ -235,7 +235,6 @@ void GraphPlot::GetAllCellsMeanCov(const lslgeneric::NDTMap *mapPtr,cov_vector &
   for(int i=0;i<cells.size();i++){
     cov.push_back(cells[i]->getCov());
     mean.push_back(cells[i]->getMean());
-    // delete cells[i];
   }
 }
 void GraphPlot::GetAllCellsMeanCov( std::vector<lslgeneric::NDTCell*>cells,cov_vector &cov,mean_vector &mean){

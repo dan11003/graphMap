@@ -10,8 +10,7 @@ endif()
 find_package(PCL 1.7 REQUIRED)
 find_package(catkin REQUIRED
     geometry_msgs
-                  #  pcl
-    cmake_modules #not needed
+    cmake_modules
     ndt_registration
     ndt_map
     laser_geometry
@@ -21,20 +20,24 @@ find_package(catkin REQUIRED
     rospy
     sensor_msgs
     std_msgs
-    ndt_map)
+    ndt_map
+    tf_conversions
+    tf
+    genmsg
+    )
 find_package(cmake_modules REQUIRED)
 find_package(Eigen REQUIRED COMPONENTS)
 
 
 catkin_package(
     DEPENDS Eigen libpcl-all-dev
-    CATKIN_DEPENDS ndt_registration ndt_map roscpp laser_geometry sensor_msgs
+    CATKIN_DEPENDS ndt_registration ndt_map roscpp laser_geometry sensor_msgs tf_conversions tf geometry_msgs cmake_modules eigen_conversions pcl_ros
     INCLUDE_DIRS include
     LIBRARIES ${PROJECT_NAME}
     )
 
 
-include_directories(include  ${Boost_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS} ${PCL_INCLUDE_DIRS} ${Eigen_INCLUDE_DIRS})
+include_directories(include  ${Boost_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS} ${PCL_INCLUDE_DIRS} )
 link_directories(${PCL_LIBRARY_DIRS})
 add_definitions(${PCL_DEFINITIONS})
 
@@ -72,3 +75,7 @@ target_link_libraries(graph_map_fuser_node ${PROJECT_NAME} ${catkin_LIBRARIES}  
 #)
 
 #
+install(DIRECTORY include/${PROJECT_NAME}/
+  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+  FILES_MATCHING PATTERN "*.h"
+  PATTERN ".svn" EXCLUDE)

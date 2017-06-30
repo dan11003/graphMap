@@ -28,6 +28,7 @@ string MapParam::ToString(){
 
 MapType::MapType(MapParamPtr param){
   initialized_=false;
+  enable_mapping_=param->enable_mapping_;
   sizex_= param->sizex_;
   sizey_= param->sizey_;
   sizez_= param->sizez_;

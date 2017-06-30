@@ -13,7 +13,6 @@ void NDTDLRegTypeParam::GetParametersFromRos(){
 }
 
 
-
 NDTDLRegType::NDTDLRegType(const Affine3d &sensor_pose,RegParamPtr paramptr):registrationType(sensor_pose,paramptr){
 
   NDTDLRegTypeParamPtr param = boost::dynamic_pointer_cast< NDTDLRegTypeParam >(paramptr);//Should not be NULL

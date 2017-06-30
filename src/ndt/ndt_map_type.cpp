@@ -5,10 +5,9 @@ using namespace std;
 using namespace lslgeneric;
 
 NDTMapType::NDTMapType( MapParamPtr paramptr) : MapType(paramptr){
-  NDT2DMapParamPtr param = boost::dynamic_pointer_cast< NDTMapParam >(paramptr);//Should not be NULL
+  NDTMapParamPtr param = boost::dynamic_pointer_cast< NDTMapParam >(paramptr);//Should not be NULL
   if(param!=NULL){
     resolution_=param ->resolution_;
-    enable_mapping_=param->enable_mapping_;
     map_ = new lslgeneric::NDTMap(new lslgeneric::LazyGrid(resolution_));
     map_->initialize(0.0,0.0,0.0,param->sizex_,param->sizey_,param->sizez_);
     cout<<"created ndt2dmap"<<endl;
@@ -39,7 +38,7 @@ bool NDTMapType::CompoundMapsByRadius(MapTypePtr target,const Affine3d &T_source
   Affine3d Tdiff=Affine3d::Identity();
    Tdiff=T_source.inverse()*T_target;
    pcl::PointXYZ center_pcl(Tdiff.translation()(0),Tdiff.translation()(1),Tdiff.translation()(2));
-  if( NDT2DMapPtr targetPtr=boost::dynamic_pointer_cast<NDTMapType>(target) ){
+  if( NDTMapPtr targetPtr=boost::dynamic_pointer_cast<NDTMapType>(target) ){
     cout<<"dynamic casted pointer"<<endl;
     if(resolution_!=targetPtr->resolution_)//checking if source and target have same resolution, they shoould have.
       return false;

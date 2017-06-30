@@ -59,16 +59,16 @@ typedef boost::shared_ptr<TemplateRegTypeParam> TemplateRegTypeParamPtr;
 
 
 class NDTMapType;
-typedef boost::shared_ptr<NDTMapType> NDT2DMapPtr;
+typedef boost::shared_ptr<NDTMapType> NDTMapPtr;
 
 class NDTMapParam;
-typedef boost::shared_ptr<NDTMapParam> NDT2DMapParamPtr;
+typedef boost::shared_ptr<NDTMapParam> NDTMapParamPtr;
 
-class ndtd2dRegParam;
-typedef boost::shared_ptr<ndtd2dRegParam> ndtd2dregParamPtr;
+class NDTD2DRegParam;
+typedef boost::shared_ptr<NDTD2DRegParam> NDTD2DRegParamPtr;
 
 class NDTD2DRegType;
-typedef boost::shared_ptr<NDTD2DRegType> ndtd2dregTypePtr;
+typedef boost::shared_ptr<NDTD2DRegType> NDTD2DRegTypePtr;
 
 
 class NDTDL;
@@ -129,7 +129,7 @@ typedef boost::shared_ptr<GraphParam> GraphParamPtr;
 class GraphFactory{
 public:
   static MapParamPtr          CreateMapParam(string MapType);
-  static MapTypePtr           CreateMap(MapParamPtr mapparam);
+  static MapTypePtr           CreateMapType(MapParamPtr mapparam);
   static GraphMapNavigatorPtr CreateGraphNavigator(const Eigen::Affine3d &nodepose, MapParamPtr &mapparam, GraphParamPtr graphparam);
 
   static GraphParamPtr        CreateGraphParam();

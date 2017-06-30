@@ -217,6 +217,7 @@ public:
           Eigen::AngleAxis<double>(pose_init_p,Eigen::Vector3d::UnitY()) *
           Eigen::AngleAxis<double>(pose_init_t,Eigen::Vector3d::UnitZ()) ;
       initPoseSet=true;
+
       fuser_=new GraphMapFuser(map_type_name,reg_type_name,pose_,sensorPose_);
     }
 
@@ -293,6 +294,7 @@ public:
       tf::transformEigenToTF(pose_,Transform);
       tf_.sendTransform(tf::StampedTransform(Transform, ros::Time::now(), world_frame, fuser_frame));
       fuser_odom.header.stamp=ros::Time::now();
+
       tf::poseEigenToMsg( pose_,fuser_odom.pose.pose);
       fuser_odom_publisher_.publish(fuser_odom);
     }

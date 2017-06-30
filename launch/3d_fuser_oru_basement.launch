@@ -11,7 +11,7 @@
       <param name="gt_topic" value="/vmc_navserver/state" />
       <param name="initPoseFromGT" value="true" />
 
-      <param name="map_type" value="ndt_2d_map" />
+      <param name="map_type" value="ndt_map" />
       <param name="registration_type" value="ndt_d2d_reg" />
 
       <param name="use_submap" value="true" />
